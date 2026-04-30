@@ -1,11 +1,10 @@
-<p align="center" style="display: flex; justify-content: center; align-items: center; gap: 12px;">
-  <img src="./frontend/public/favicon.svg" height="70" />
-  <span style="font-size: 56px; font-weight: 700;">
-    Tempo
-  </span>
+<p align="center">
+  <img src="./frontend/public/favicon.svg" height="110" />
 </p>
 
----
+<h1 align="center" style="font-size: 110px; margin: 0; font-weight: 700;">
+  Tempo
+</h1>
 
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev)
 [![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.5-6DB33F?logo=springboot)](https://spring.io/projects/spring-boot)
