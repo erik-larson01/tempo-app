@@ -221,7 +221,7 @@ All endpoints require a valid Auth0 JWT in the `Authorization: Bearer <token>` h
 ## File Structure
  
 ```
-momentum-app/
+tempo-app/
 ├── frontend/                      # React 18 + Vite app
 │   ├── public/                    # Static assets (favicon.svg)
 │   ├── src/
