@@ -14,7 +14,7 @@
 [![Deployed on Railway](https://img.shields.io/badge/Backend-Railway-0B0D0E?logo=railway)](https://railway.app)
 ![Last Commit](https://img.shields.io/github/last-commit/erik-larson01/tempo-app/main)
  
-**Tempo** is a full-stack productivity application that helps users decide what to work on next.**
+**Tempo** is a full-stack productivity application that helps users decide what to work on next.
 
 It computes a dynamic priority score for every project and task based on deadlines, workload, progress, and difficulty.
 This enables a ranked view of work that highlights the most urgent and impactful tasks across all projects.
@@ -50,7 +50,7 @@ This enables a ranked view of work that highlights the most urgent and impactful
  
 ## Motivation 
 
-This project was a product of two things — an [existing backend](../backend/README.md) I built last summer, and a Web Project Assignment for UW-Madison's CS571: Building User Interfaces. The course introduced me to the fundamentals of React, React Native, and UI design, and gave me the initial structure for thinking about frontend architecture.
+This project was a product of two things — an [existing backend](./backend/README.md) I built last summer, and a Web Project Assignment for UW-Madison's CS571: Building User Interfaces. The course introduced me to the fundamentals of React, React Native, and UI design, and gave me the initial structure for thinking about frontend architecture.
 
 From the class, I knew I wanted my Web Project to extend my existing backend into a full-stack application. What followed was an ~ 8 week development process where I iterated daily, gradually connecting a React frontend to my Spring Boot API and learning how to properly integrate both sides of a system.
 
@@ -273,7 +273,7 @@ momentum-app/
  
 ## Future Improvements
  
-- **Canvas LMS integration** — import assignments directly from Canvas using OAuth2 or the ICS calendar feed, with due dates and course names mapped automatically to projects
+- **Canvas LMS integration** — import assignments directly from Canvas an ICS calendar feed, with due dates and course names mapped automatically to projects
 - **Profile Page** - set preferences, profile level statistics
 - **Email/push notifications** — reminders for tasks due today and overdue items
 - **Priority tuning** — user-configurable weights for the priority algorithm factors
