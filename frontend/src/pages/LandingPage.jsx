@@ -77,7 +77,7 @@ function LandingPage({ error }) {
             <div className="flex flex-wrap items-center gap-3">
               <button
                 type="button"
-                onClick={() => loginWithRedirect()}
+                onClick={() => loginWithRedirect({authorizationParams: { screen_hint: 'signup' } })}
                 className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white transition duration-200 hover:bg-indigo-700"
               >
                 Start Planning
