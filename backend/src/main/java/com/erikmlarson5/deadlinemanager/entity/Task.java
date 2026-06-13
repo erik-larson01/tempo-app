@@ -2,6 +2,7 @@ package com.erikmlarson5.deadlinemanager.entity;
 
 import com.erikmlarson5.deadlinemanager.utils.Status;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -24,7 +25,9 @@ public class Task {
 
     private LocalDate dueDate;
 
+
     @Column(nullable = false)
+    @Max(value = 50, message = "Estimated hours must not exceed 50")
     private Float estimatedHours;
 
     private Integer difficulty;

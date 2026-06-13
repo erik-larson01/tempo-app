@@ -2,6 +2,7 @@ package com.erikmlarson5.deadlinemanager.entity;
 
 import com.erikmlarson5.deadlinemanager.utils.Status;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -37,6 +38,7 @@ public class Project {
 
     private float priority = 0.0f;
 
+    @Max(value = 500, message = "Estimated hours must not exceed 500")
     private Float estimatedHours;
 
     @Column(name = "created_at", nullable = false, updatable = false)
