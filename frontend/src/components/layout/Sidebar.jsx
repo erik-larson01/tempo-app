@@ -1,13 +1,35 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { ChevronRight, Folder, FolderKanban, LayoutDashboard } from "lucide-react";
 import ProjectsContext from "../../contexts/ProjectsContext";
 
 function Sidebar({ isOpen, onClose }) {
-  // Use state to track dropdown toggle
-  const [projectsOpen, setProjectsOpen] = useState(false);
-  const [activeProjectsOpen, setActiveProjectsOpen] = useState(false);
-  const [completedProjectsOpen, setCompletedProjectsOpen] = useState(false);
+  // Use state to track dropdown toggle, persisted to localStorage
+  const [projectsOpen, setProjectsOpen] = useState(() => {
+    const saved = localStorage.getItem("tempo-sidebar-projects-open");
+    return saved !== null ? JSON.parse(saved) : false;
+  });
+  const [activeProjectsOpen, setActiveProjectsOpen] = useState(() => {
+    const saved = localStorage.getItem("tempo-sidebar-active-projects-open");
+    return saved !== null ? JSON.parse(saved) : false;
+  });
+  const [completedProjectsOpen, setCompletedProjectsOpen] = useState(() => {
+    const saved = localStorage.getItem("tempo-sidebar-completed-projects-open");
+    return saved !== null ? JSON.parse(saved) : false;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("tempo-sidebar-projects-open", JSON.stringify(projectsOpen));
+  }, [projectsOpen]);
+
+  useEffect(() => {
+    localStorage.setItem("tempo-sidebar-active-projects-open", JSON.stringify(activeProjectsOpen));
+  }, [activeProjectsOpen]);
+
+  useEffect(() => {
+    localStorage.setItem("tempo-sidebar-completed-projects-open", JSON.stringify(completedProjectsOpen));
+  }, [completedProjectsOpen]);
+
   const { projects } = useContext(ProjectsContext)
 
   // Sort projects alphabetically by title, ignoring case and handling numeric sorting (e.g. "Project 2" before "Project 10")

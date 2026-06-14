@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus } from 'lucide-react'
 import ProgressBar from '../projects/ProgressBar'
 import TaskRow from './TaskRow'
@@ -23,9 +23,30 @@ function TaskList({tasks, onAddTask, onTaskToggleComplete, onTaskStatusChange, o
 		STATUS_ASC: 'status-asc',
 	}
 
-	const [selectedFilter, setSelectedFilter] = useState(FILTER_OPTIONS.ALL)
-	const [sortBy, setSortBy] = useState(SORT_OPTIONS.DUE_DATE_ASC)
-	const [showCompleted, setShowCompleted] = useState(false)
+  const [selectedFilter, setSelectedFilter] = useState(() => {
+    const saved = localStorage.getItem("tempo-task-list-filter");
+    return saved !== null ? JSON.parse(saved) : FILTER_OPTIONS.ALL;
+  });
+  const [sortBy, setSortBy] = useState(() => {
+    const saved = localStorage.getItem("tempo-task-list-sort");
+    return saved !== null ? JSON.parse(saved) : SORT_OPTIONS.DUE_DATE_ASC;
+  });
+  const [showCompleted, setShowCompleted] = useState(() => {
+    const saved = localStorage.getItem("tempo-task-list-show-completed");
+    return saved !== null ? JSON.parse(saved) : false;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("tempo-task-list-filter", JSON.stringify(selectedFilter));
+  }, [selectedFilter]);
+
+  useEffect(() => {
+    localStorage.setItem("tempo-task-list-sort", JSON.stringify(sortBy));
+  }, [sortBy]);
+
+  useEffect(() => {
+    localStorage.setItem("tempo-task-list-show-completed", JSON.stringify(showCompleted));
+  }, [showCompleted]);
 
   // Get task completion info for progress bar
 	const safeTasks = Array.isArray(tasks) ? tasks : []

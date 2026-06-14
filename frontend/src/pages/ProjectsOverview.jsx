@@ -1,4 +1,4 @@
-import { useContext, useState } from "react"
+import { useContext, useState, useEffect } from "react"
 import { Plus } from "lucide-react"
 import ProjectModal from "../components/projects/ProjectModal"
 import ProjectsContext from "../contexts/ProjectsContext"
@@ -26,10 +26,31 @@ function ProjectsOverview() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
-  const [sortBy, setSortBy] = useState(SORT_OPTIONS.PRIORITY_DESC)
+  const [sortBy, setSortBy] = useState(() => {
+    const saved = localStorage.getItem("tempo-projects-overview-sort");
+    return saved !== null ? JSON.parse(saved) : SORT_OPTIONS.PRIORITY_DESC;
+  });
   const [titleSearch, setTitleSearch] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState(ALL_CATEGORIES_OPTION)
-  const [showCompleted, setShowCompleted] = useState(false)
+  const [selectedCategory, setSelectedCategory] = useState(() => {
+    const saved = localStorage.getItem("tempo-projects-overview-category");
+    return saved !== null ? JSON.parse(saved) : ALL_CATEGORIES_OPTION;
+  });
+  const [showCompleted, setShowCompleted] = useState(() => {
+    const saved = localStorage.getItem("tempo-projects-overview-show-completed");
+    return saved !== null ? JSON.parse(saved) : false;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("tempo-projects-overview-sort", JSON.stringify(sortBy));
+  }, [sortBy]);
+
+  useEffect(() => {
+    localStorage.setItem("tempo-projects-overview-category", JSON.stringify(selectedCategory));
+  }, [selectedCategory]);
+
+  useEffect(() => {
+    localStorage.setItem("tempo-projects-overview-show-completed", JSON.stringify(showCompleted));
+  }, [showCompleted]);
 
   // State to track which project is selected for editing or deleting
   const [selectedProject, setSelectedProject] = useState(null)
