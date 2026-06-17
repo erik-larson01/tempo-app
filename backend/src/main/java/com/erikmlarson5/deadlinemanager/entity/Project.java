@@ -26,7 +26,7 @@ public class Project {
     @Column(nullable = false)
     private String title;
 
-    @Column(columnDefinition = "text")
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     private String category;

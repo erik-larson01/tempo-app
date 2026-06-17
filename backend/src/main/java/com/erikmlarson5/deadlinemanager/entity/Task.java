@@ -21,10 +21,10 @@ public class Task {
     @Column(nullable = false)
     private String title;
 
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     private LocalDate dueDate;
-
 
     @Column(nullable = false)
     @Max(value = 50, message = "Estimated hours must not exceed 50")
