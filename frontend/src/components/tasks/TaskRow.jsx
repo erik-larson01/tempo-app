@@ -264,7 +264,7 @@ function TaskRow({task, isStatusUpdating = false, onToggleComplete, onStatusChan
 		  {/** Expanded task description when TaskRow is clicked */}
       <div className={`overflow-hidden transition-all duration-300 ${isExpanded && task.description ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
         <div className="ml-10 mt-2.5 border-t border-gray-100 pt-2.5">
-          <p className={`text-xs leading-relaxed ${task.description ? 'text-gray-500' : 'text-gray-400 italic'}`}>
+          <p className={`text-xs leading-relaxed ${task.description ? 'text-gray-500' : 'text-gray-400 italic'} whitespace-pre-line`}>
             {task.description || 'No description added.'}
           </p>
         </div>
