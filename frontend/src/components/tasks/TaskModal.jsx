@@ -109,6 +109,7 @@ function TaskModal({mode, onClose, onTaskSaved, projectId,task = null}) {
 					description: form.description,
 					difficulty: form.difficulty,
 					estimatedHours: parseFloat(form.estimatedHours),
+          clientDate: !isEditMode ? getLocalDateString() : undefined, // Only send clientDate on create
 				}),
 			})
 
@@ -145,11 +146,9 @@ function TaskModal({mode, onClose, onTaskSaved, projectId,task = null}) {
 		form.estimatedHours !== "" &&
 		!Number.isNaN(Number(form.estimatedHours))
 
-	// Keep due date min consistent with mode: today for create, task createdAt for edit
+	// Keep due date min consistent with mode: today for create, task createdOnDate for edit
 	const isEditMode = mode === "edit"
-	const minDateStr = isEditMode && task?.createdAt
-		? getLocalDateString(task.createdAt)
-		: getLocalDateString()
+	const minDateStr = isEditMode && task?.createdOnDate ? task.createdOnDate : getLocalDateString()
 
 	// In edit mode, only enable submission after at least one field differs from the original task values
 	const hasFormChanges = isEditMode

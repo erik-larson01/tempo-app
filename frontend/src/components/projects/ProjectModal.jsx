@@ -112,6 +112,7 @@ function ProjectModal({ mode, onClose, onProjectSaved, project = null }) {
           description: form.description || null,
           difficulty: form.difficulty,
           estimatedHours: form.estimatedHours ? parseFloat(form.estimatedHours) : null,
+          clientDate: !isEditMode ? getLocalDateString() : undefined, // Only send clientDate on create
         }),
       })
 
@@ -147,7 +148,7 @@ function ProjectModal({ mode, onClose, onProjectSaved, project = null }) {
 
   // Keep due date min consistent with mode: today for create, project createdAt for edit
   const isEditMode = mode === "edit"
-  const minDateStr = isEditMode ? getLocalDateString(project.createdAt) : getLocalDateString()
+  const minDateStr = isEditMode ? (project.createdOnDate || getLocalDateString()) : getLocalDateString()
 
   // In edit mode, only enable submission after at least one field differs from the original project values
   const hasFormChanges = isEditMode
