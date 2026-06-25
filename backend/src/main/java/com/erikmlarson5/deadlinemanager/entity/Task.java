@@ -26,6 +26,9 @@ public class Task {
 
     private LocalDate dueDate;
 
+    @Column(nullable = false, updatable = false)
+    private LocalDate createdOnDate;
+
     @Column(nullable = false)
     @Max(value = 50, message = "Estimated hours must not exceed 50")
     private Float estimatedHours;
@@ -116,6 +119,14 @@ public class Task {
 
     public void setProject(Project project) {
         this.project = project;
+    }
+
+    public void setCreatedOnDate(LocalDate createdOnDate) {
+        this.createdOnDate = createdOnDate;
+    }
+
+    public LocalDate getCreatedOnDate() {
+        return createdOnDate;
     }
 
     public OffsetDateTime getCreatedAt() {

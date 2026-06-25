@@ -34,6 +34,9 @@ public class Project {
     @Column(nullable = false)
     private LocalDate dueDate;
 
+    @Column(nullable = false, updatable = false)
+    private LocalDate createdOnDate;
+
     private Integer difficulty;
 
     private float priority = 0.0f;
@@ -192,6 +195,15 @@ public class Project {
         task.setProject(null);
     }
 
+    public void setCreatedOnDate(LocalDate createdOnDate) {
+        this.createdOnDate = createdOnDate;
+    }
+
+    public LocalDate getCreatedOnDate() {
+        return createdOnDate;
+    }
+
+
     @PrePersist
     protected void onCreate() {
         createdAt = OffsetDateTime.now(ZoneOffset.UTC);
@@ -232,6 +244,7 @@ public class Project {
                 ", difficulty=" + difficulty +
                 ", priority=" + priority +
                 ", status=" + status +
+                ", createdOnDate=" + createdOnDate +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 ", completedAt=" + completedAt +
