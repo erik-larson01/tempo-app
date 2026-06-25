@@ -28,6 +28,7 @@ public class ProjectMapper {
         project.setEstimatedHours(dto.getEstimatedHours());
         project.setDifficulty(dto.getDifficulty());
         project.setStatus(Status.valueOf(dto.getStatus().toUpperCase()));
+        project.setCreatedOnDate(dto.getClientDate());
         return project;
     }
 
@@ -50,6 +51,7 @@ public class ProjectMapper {
         dto.setCreatedAt(project.getCreatedAt());
         dto.setUpdatedAt(project.getUpdatedAt());
         dto.setCompletedAt(project.getCompletedAt());
+        dto.setCreatedOnDate(project.getCreatedOnDate());
 
         if (project.getTasks() != null) {
             List<TaskOutputDTO> taskDtos = new ArrayList<>();

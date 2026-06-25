@@ -24,6 +24,7 @@ public class TaskMapper {
         task.setDifficulty(dto.getDifficulty());
         task.setStatus(Status.valueOf(dto.getStatus().toUpperCase()));
         task.setProject(project);
+        task.setCreatedOnDate(dto.getClientDate());
         return task;
     }
 
@@ -45,6 +46,7 @@ public class TaskMapper {
         dto.setUpdatedAt(task.getUpdatedAt());
         dto.setCompletedAt(task.getCompletedAt());
         dto.setProjectId(task.getProject().getProjectId());
+        dto.setCreatedOnDate(task.getCreatedOnDate());
         return dto;
     }
 }
