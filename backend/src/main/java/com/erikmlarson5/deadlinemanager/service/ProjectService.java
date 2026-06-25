@@ -40,7 +40,7 @@ public class ProjectService {
      * @return an outputDTO of the saved project
      */
     public ProjectOutputDTO createProject(ProjectInputDTO dto, String userId) {
-        validateDueDateForCreate(dto.getDueDate());
+        validateDueDateForCreate(dto.getDueDate(), dto.getClientDate());
         validateStatusForCreate(dto.getStatus());
 
         Project project = ProjectMapper.toEntity(dto);
@@ -208,12 +208,13 @@ public class ProjectService {
      * Enforces due-date rules for project creation.
      * @param dueDate the due date from the input DTO
      */
-    private void validateDueDateForCreate(LocalDate dueDate) {
+    private void validateDueDateForCreate(LocalDate dueDate, LocalDate clientDate) {
         if (dueDate == null) {
             throw new IllegalArgumentException("Due date is required");
         }
 
-        if (dueDate.isBefore(LocalDate.now())) {
+        LocalDate today = clientDate != null ? clientDate : LocalDate.now();
+        if (dueDate.isBefore(today)) {
             throw new IllegalArgumentException("Due date must be today or in the future when creating a project");
         }
     }
@@ -232,8 +233,7 @@ public class ProjectService {
             throw new IllegalStateException("Project creation timestamp is missing");
         }
 
-        LocalDate projectCreatedDate = project.getCreatedAt().toLocalDate();
-        if (dueDate.isBefore(projectCreatedDate)) {
+        if (dueDate.isBefore(project.getCreatedOnDate())) {
             throw new IllegalArgumentException("Due date cannot be before the project creation date");
         }
     }

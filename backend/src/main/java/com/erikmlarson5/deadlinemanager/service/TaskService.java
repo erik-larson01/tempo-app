@@ -50,7 +50,7 @@ public class TaskService {
      * @return an outputDTO of the saved task
      */
     public ProjectOutputDTO createTask(Long projectId, TaskInputDTO dto, String userId) {
-        validateDueDateForCreate(dto.getDueDate());
+        validateDueDateForCreate(dto.getDueDate(), dto.getClientDate());
         validateStatusForCreate(dto.getStatus());
 
         Project project = projectRepository.findByProjectIdAndUserId(projectId, userId)
@@ -188,12 +188,12 @@ public class TaskService {
      * Enforces due-date rules for task creation.
      * @param dueDate the due date from the input DTO
      */
-    private void validateDueDateForCreate(LocalDate dueDate) {
+    private void validateDueDateForCreate(LocalDate dueDate, LocalDate clientDate) {
         if (dueDate == null) {
             return;
         }
-
-        if (dueDate.isBefore(LocalDate.now())) {
+        LocalDate today = clientDate != null ? clientDate : LocalDate.now();
+        if (dueDate.isBefore(today)) {
             throw new IllegalArgumentException("Due date must be today or in the future when creating a task");
         }
     }
@@ -212,8 +212,7 @@ public class TaskService {
             throw new IllegalStateException("Task creation timestamp is missing");
         }
 
-        LocalDate taskCreatedDate = task.getCreatedAt().toLocalDate();
-        if (dueDate.isBefore(taskCreatedDate)) {
+        if (dueDate.isBefore(task.getCreatedOnDate())) {
             throw new IllegalArgumentException("Due date cannot be before the task creation date");
         }
     }
