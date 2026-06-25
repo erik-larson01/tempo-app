@@ -15,6 +15,7 @@ public class TaskOutputDTO {
     private float estimatedHours;
     private int difficulty;
     private String status;
+    private LocalDate createdOnDate;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
     private OffsetDateTime completedAt;
@@ -43,6 +44,9 @@ public class TaskOutputDTO {
 
     public Long getProjectId() { return projectId; }
     public void setProjectId(Long projectId) { this.projectId = projectId; }
+
+    public LocalDate getCreatedOnDate() { return createdOnDate; }
+    public void setCreatedOnDate(LocalDate createdOnDate) { this.createdOnDate = createdOnDate; }
 
     public void setCreatedAt(OffsetDateTime createdAt) { this.createdAt = createdAt; }
     public void setUpdatedAt(OffsetDateTime updatedAt) { this.updatedAt = updatedAt; }

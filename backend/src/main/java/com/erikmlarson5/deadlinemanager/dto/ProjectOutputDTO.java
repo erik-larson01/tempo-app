@@ -18,6 +18,7 @@ public class ProjectOutputDTO {
     private Integer difficulty;
     private String status;
     private float priority;
+    private LocalDate createdOnDate;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
     private OffsetDateTime completedAt;
@@ -49,6 +50,9 @@ public class ProjectOutputDTO {
 
     public float getPriority() { return priority; }
     public void setPriority(float priority) { this.priority = priority; }
+
+    public LocalDate getCreatedOnDate() { return createdOnDate; }
+    public void setCreatedOnDate(LocalDate createdOnDate) { this.createdOnDate = createdOnDate; }
 
     public void setCreatedAt(OffsetDateTime createdAt) { this.createdAt = createdAt; }
     public void setUpdatedAt(OffsetDateTime updatedAt) { this.updatedAt = updatedAt; }

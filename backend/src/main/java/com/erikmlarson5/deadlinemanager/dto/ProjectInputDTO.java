@@ -34,6 +34,11 @@ public class ProjectInputDTO {
             message = "Status must be one of: NOT_STARTED, IN_PROGRESS, COMPLETED")
     private String status;
 
+    private LocalDate clientDate;
+
+    public LocalDate getClientDate() { return clientDate; }
+    public void setClientDate(LocalDate clientDate) { this.clientDate = clientDate; }
+
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
 
