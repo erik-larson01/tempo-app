@@ -198,8 +198,8 @@ function TaskModal({mode, onClose, onTaskSaved, projectId,task = null}) {
 								</div>
 
 								{/** Due Date, Status fields */}
-								<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-									<div className="space-y-1.5">
+								<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+									<div className="space-y-1.5 min-w-0">
 										<label htmlFor="dueDate" className="block text-sm font-medium text-gray-700">
 											Due Date
 										</label>
@@ -214,7 +214,7 @@ function TaskModal({mode, onClose, onTaskSaved, projectId,task = null}) {
 										/>
 									</div>
 
-									<div className="space-y-1.5">
+									<div className="space-y-1.5 min-w-0">
 										<label htmlFor="status" className="block text-sm font-medium text-gray-700">
 											Status <span className="text-red-500">*</span>
 										</label>
