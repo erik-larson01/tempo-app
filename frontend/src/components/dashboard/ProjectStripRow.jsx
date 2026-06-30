@@ -89,21 +89,21 @@ function ProjectStripRow({ project }) {
 	return (
 		<Link
 			to={`/projects/${project.projectId}`}
-			className="flex items-center gap-3 border-b border-gray-100 px-1 py-3 transition-colors hover:bg-gray-50 last:border-0"
+			className="flex items-center gap-2 sm:gap-3 border-b border-gray-100 px-1 py-3 transition-colors hover:bg-gray-50 last:border-0 overflow-hidden"
 		>
 			<p className="min-w-0 flex-1 truncate text-sm font-medium text-gray-900">{project.title}</p>
 
-			<div className="w-20 shrink-0">
+			<div className="w-16 sm:w-20 shrink-0">
 				<ProgressBar completed={completedTasks} total={totalTasks} />
 			</div>
 
-			<span className="w-8 shrink-0 text-xs text-gray-500">{percentage}%</span>
+			<span className="hidden sm:block w-8 shrink-0 text-xs text-gray-500">{percentage}%</span>
 
 			<span className={`shrink-0 rounded-full px-2 py-1 text-xs font-medium ${dueInfo.style}`}>
 				{dueInfo.label}
 			</span>
 
-			<span className={`shrink-0 rounded-full px-2 py-1 text-xs font-medium ${priorityInfo.style}`}>
+			<span className={`hidden sm:block shrink-0 rounded-full px-2 py-1 text-xs font-medium ${priorityInfo.style}`}>
 				{priorityInfo.label}
 			</span>
 
