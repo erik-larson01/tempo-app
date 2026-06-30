@@ -47,13 +47,13 @@ function Sidebar({ isOpen, onClose }) {
     <>
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/40 z-30 lg:hidden"
+          className="fixed inset-0 min-h-dvh bg-black/40 z-30 lg:hidden"
           onClick={onClose}
         />
       )}
 
       {/* Sidebar with transform transition for mobile*/}
-      <aside className={`fixed top-0 left-0 h-full z-40 w-64 bg-white border-r border-gray-200 flex flex-col transform transition-transform duration-300 
+      <aside className={`fixed top-0 left-0 min-h-dvh z-40 w-64 bg-white border-r border-gray-200 flex flex-col transform transition-transform duration-300 
         ease-in-out lg:static lg:w-48 lg:translate-x-0 lg:z-auto ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <nav className="flex-1 p-3 space-y-1">
           {/** Link to Dashboard */}
