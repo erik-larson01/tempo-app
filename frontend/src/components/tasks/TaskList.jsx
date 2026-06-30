@@ -224,114 +224,107 @@ function TaskList({tasks, onAddTask, onTaskToggleComplete, onTaskStatusChange, o
 			{/** Task completion section with progress bar and task summary info */}
 			<p className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Task Progress</p>
 
-			<div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-				<div className="flex min-w-0 flex-col gap-4 sm:gap-5 lg:flex-row lg:items-center lg:gap-7">
-					<p className="shrink-0 text-sm font-semibold text-gray-800">
-						Tasks ({totalTasks})
-          </p>
-
-					<div className="w-36 shrink-0 sm:w-52 lg:w-72 xl:w-lg">
-						<ProgressBar completed={completedTasks} total={totalTasks} thick={true} />
-					</div>
-
-					<div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 lg:shrink-0">
-						<span>
-							{completedTasks}/{totalTasks}
-						</span>
-						<span className="text-gray-500">&middot;</span>
-						<span>{completionPercentage}%</span>
-						<span className="text-gray-500">&middot;</span>
-						<span>{formattedEstimatedHoursRemaining}h left</span>
-					</div>
-				</div>
+			{/** Header row with task count and add button */}
+			<div className="flex items-center justify-between gap-3">
+				<p className="shrink-0 text-sm font-semibold text-gray-800">Tasks ({totalTasks})</p>
 
 				{/** Add Task button */}
 				<button
 					type="button"
 					onClick={onAddTask}
-					className="self-start flex items-center gap-1 rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white transition-colors duration-200 hover:bg-indigo-700"
+					className="shrink-0 flex items-center gap-1 rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white transition-colors duration-200 hover:bg-indigo-700"
 				>
 					<Plus size={16} />
 					Add Task
 				</button>
 			</div>
 
+			{/** Full-width progress bar and summary stats */}
+			<div className="mt-3 space-y-1.5">
+				<div className="w-full">
+					<ProgressBar completed={completedTasks} total={totalTasks} thick={true} />
+				</div>
+
+				<div className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
+					<span>{completedTasks}/{totalTasks} tasks</span>
+					<span>&middot;</span>
+					<span>{completionPercentage}%</span>
+					<span>&middot;</span>
+					<span>{formattedEstimatedHoursRemaining}h remaining</span>
+				</div>
+			</div>
+
 			{/** Task Filter and Sort controls */}
-			<div className="mt-4 flex flex-wrap items-center gap-3">
-        {/** Filter pills */}
-				<div className="flex flex-wrap items-center gap-2">
-					<button
-						type="button"
-						onClick={() => {
-							setSelectedFilter(FILTER_OPTIONS.ALL)
-							setShowCompleted(false)
-						}}
-						className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${selectedFilter === FILTER_OPTIONS.ALL ? 'bg-indigo-100 text-indigo-700 ring-1 ring-indigo-200' : 'bg-white text-gray-700 ring-1 ring-gray-200 hover:bg-gray-100'}`}
-					>
-						All ({totalTasks})
-					</button>
-					<button
-						type="button"
-						onClick={() => setSelectedFilter(FILTER_OPTIONS.TODO)}
-						className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${selectedFilter === FILTER_OPTIONS.TODO ? 'bg-indigo-100 text-indigo-700 ring-1 ring-indigo-200' : 'bg-white text-gray-700 ring-1 ring-gray-200 hover:bg-gray-100'}`}
-					>
-						To Do ({todoTasksCount})
-					</button>
-					<button
-						type="button"
-						onClick={() => setSelectedFilter(FILTER_OPTIONS.IN_PROGRESS)}
-						className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${selectedFilter === FILTER_OPTIONS.IN_PROGRESS ? 'bg-indigo-100 text-indigo-700 ring-1 ring-indigo-200' : 'bg-white text-gray-700 ring-1 ring-gray-200 hover:bg-gray-100'}`}
-					>
-						In Progress ({inProgressTasksCount})
-					</button>
-					<button
-						type="button"
-						onClick={() => setSelectedFilter(FILTER_OPTIONS.OVERDUE)}
-						className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${selectedFilter === FILTER_OPTIONS.OVERDUE ? 'bg-rose-100 text-rose-700 ring-1 ring-rose-200' : 'bg-white text-gray-700 ring-1 ring-gray-200 hover:bg-gray-100'}`}
-					>
-						Overdue ({overdueTasksCount})
-					</button>
-					<button
-						type="button"
-						onClick={() => setSelectedFilter(FILTER_OPTIONS.DUE_TODAY)}
-						className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${selectedFilter === FILTER_OPTIONS.DUE_TODAY ? 'bg-amber-100 text-amber-700 ring-1 ring-amber-200' : 'bg-white text-gray-700 ring-1 ring-gray-200 hover:bg-gray-100'}`}
-					>
-						Due Today ({dueTodayTasksCount})
-					</button>
-					<button
-						type="button"
-						onClick={() => setSelectedFilter(FILTER_OPTIONS.NO_DUE_DATE)}
-						className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${selectedFilter === FILTER_OPTIONS.NO_DUE_DATE ? 'bg-slate-100 text-slate-700 ring-1 ring-slate-200' : 'bg-white text-gray-700 ring-1 ring-gray-200 hover:bg-gray-100'}`}
-					>
-						No Due Date ({noDueDateTasksCount})
-					</button>
-				</div>
+			<div className="mt-4 flex flex-wrap items-center gap-2">
+				{/** Filter pills row */}
+				<button
+					type="button"
+					onClick={() => {
+						setSelectedFilter(FILTER_OPTIONS.ALL)
+						setShowCompleted(false)
+					}}
+					className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${selectedFilter === FILTER_OPTIONS.ALL ? 'bg-indigo-100 text-indigo-700 ring-1 ring-indigo-200' : 'bg-white text-gray-700 ring-1 ring-gray-200 hover:bg-gray-100'}`}
+				>
+					All ({totalTasks})
+				</button>
+				<button
+					type="button"
+					onClick={() => setSelectedFilter(FILTER_OPTIONS.TODO)}
+					className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${selectedFilter === FILTER_OPTIONS.TODO ? 'bg-indigo-100 text-indigo-700 ring-1 ring-indigo-200' : 'bg-white text-gray-700 ring-1 ring-gray-200 hover:bg-gray-100'}`}
+				>
+					To Do ({todoTasksCount})
+				</button>
+				<button
+					type="button"
+					onClick={() => setSelectedFilter(FILTER_OPTIONS.IN_PROGRESS)}
+					className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${selectedFilter === FILTER_OPTIONS.IN_PROGRESS ? 'bg-indigo-100 text-indigo-700 ring-1 ring-indigo-200' : 'bg-white text-gray-700 ring-1 ring-gray-200 hover:bg-gray-100'}`}
+				>
+					In Progress ({inProgressTasksCount})
+				</button>
+				<button
+					type="button"
+					onClick={() => setSelectedFilter(FILTER_OPTIONS.OVERDUE)}
+					className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${selectedFilter === FILTER_OPTIONS.OVERDUE ? 'bg-rose-100 text-rose-700 ring-1 ring-rose-200' : 'bg-white text-gray-700 ring-1 ring-gray-200 hover:bg-gray-100'}`}
+				>
+					Overdue ({overdueTasksCount})
+				</button>
+				<button
+					type="button"
+					onClick={() => setSelectedFilter(FILTER_OPTIONS.DUE_TODAY)}
+					className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${selectedFilter === FILTER_OPTIONS.DUE_TODAY ? 'bg-amber-100 text-amber-700 ring-1 ring-amber-200' : 'bg-white text-gray-700 ring-1 ring-gray-200 hover:bg-gray-100'}`}
+				>
+					Due Today ({dueTodayTasksCount})
+				</button>
+				<button
+					type="button"
+					onClick={() => setSelectedFilter(FILTER_OPTIONS.NO_DUE_DATE)}
+					className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${selectedFilter === FILTER_OPTIONS.NO_DUE_DATE ? 'bg-slate-100 text-slate-700 ring-1 ring-slate-200' : 'bg-white text-gray-700 ring-1 ring-gray-200 hover:bg-gray-100'}`}
+				>
+					No Due Date ({noDueDateTasksCount})
+				</button>
 
-        {/** Sort dropdown */}
-				<div className="ml-1 flex items-center gap-3">
-					<label htmlFor="task-sort" className="text-xs font-medium uppercase tracking-wide text-gray-500">
-						Sort By
-					</label>
+				{/** Divider between filters and sort controls */}
+				<div className="hidden h-6 w-px shrink-0 bg-gray-300 sm:block" />
 
-					<select
-						id="task-sort"
-						value={sortBy}
-						onChange={(event) => setSortBy(event.target.value)}
-						className="rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-sm text-gray-800 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
-					>
-						<option value={SORT_OPTIONS.DUE_DATE_ASC}>Due date (Soonest)</option>
-						<option value={SORT_OPTIONS.DUE_DATE_DESC}>Due date (Latest)</option>
-						<option value={SORT_OPTIONS.DIFFICULTY_DESC}>Difficulty (Hardest first)</option>
-						<option value={SORT_OPTIONS.ESTIMATED_HOURS_DESC}>Estimated hours (Most first)</option>
-						<option value={SORT_OPTIONS.STATUS_ASC}>Status</option>
-					</select>
-				</div>
+				{/** Sort and completed toggle row */}
+				<select
+					id="task-sort"
+					value={sortBy}
+					onChange={(event) => setSortBy(event.target.value)}
+					className="shrink-0 rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-xs text-gray-800 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+				>
+					<option value={SORT_OPTIONS.DUE_DATE_ASC}>Due date (Soonest)</option>
+					<option value={SORT_OPTIONS.DUE_DATE_DESC}>Due date (Latest)</option>
+					<option value={SORT_OPTIONS.DIFFICULTY_DESC}>Difficulty (Hardest)</option>
+					<option value={SORT_OPTIONS.ESTIMATED_HOURS_DESC}>Est. hours (Most)</option>
+					<option value={SORT_OPTIONS.STATUS_ASC}>Status</option>
+				</select>
 
 				{selectedFilter === FILTER_OPTIONS.ALL && completedTasksList.length > 0 && (
 					<button
 						type="button"
 						onClick={() => setShowCompleted((prev) => !prev)}
-						className="rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 transition-colors duration-200 hover:bg-gray-50"
+						className="shrink-0 rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 transition-colors duration-200 hover:bg-gray-50"
 					>
 						{showCompleted ? 'Hide' : 'Show'} completed ({completedTasksList.length})
 					</button>
