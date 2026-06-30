@@ -229,7 +229,7 @@ function TaskRow({task, isStatusUpdating = false, onToggleComplete, onStatusChan
 				</div>
 
 				{/** Mobile metadata row */}
-				<div className="ml-8 mt-1.5 flex flex-wrap items-center gap-2" onClick={(e) => e.stopPropagation()}>
+				<div className="ml-1 mt-1.5 flex flex-wrap items-center gap-2" onClick={(e) => e.stopPropagation()}>
 					<span className={`rounded-full px-2 py-0.5 text-xs font-medium ${dueDateInfo.style}`}>
 						{dueDateInfo.label}
 					</span>
