@@ -187,52 +187,45 @@ function ProjectsOverview() {
         </div>
 
         {/** Search/Filter/Sort Controls */}
-        <div className="flex flex-wrap items-center gap-3 pt-1">
+        <div className="flex flex-wrap items-center gap-2 pt-1">
           <input
             type="text"
             value={titleSearch}
             onChange={(event) => setTitleSearch(event.target.value)}
             placeholder="Search titles"
             aria-label="Search projects by title"
-            className="w-52 rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+            className="flex-1 min-w-30 rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
           />
-          <label htmlFor="project-category" className="text-xs font-medium uppercase tracking-wide text-gray-500">
-            Category
-          </label>
+
+          {categoryOptions.length > 0 && (
+            <select
+              id="project-category"
+              value={selectedCategory}
+              onChange={(event) => setSelectedCategory(event.target.value)}
+              className="min-w-0 rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-sm text-gray-800 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+            >
+              <option value={ALL_CATEGORIES_OPTION}>All categories</option>
+              {categoryOptions.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          )}
 
           <select
-            id="project-category"
-            value={selectedCategory}
-            onChange={(event) => setSelectedCategory(event.target.value)}
-            className="rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-sm text-gray-800 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+            id="project-sort"
+            value={sortBy}
+            onChange={(event) => setSortBy(event.target.value)}
+            className="min-w-0 rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-sm text-gray-800 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
           >
-            <option value={ALL_CATEGORIES_OPTION}>All categories</option>
-            {categoryOptions.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
+            <option value={SORT_OPTIONS.PRIORITY_DESC}>Priority (High-Low)</option>
+            <option value={SORT_OPTIONS.PRIORITY_ASC}>Priority (Low-High)</option>
+            <option value={SORT_OPTIONS.DUE_DATE_ASC}>Due date (Soonest)</option>
+            <option value={SORT_OPTIONS.DUE_DATE_DESC}>Due date (Latest)</option>
+            <option value={SORT_OPTIONS.CREATED_AT_DESC}>Newest first</option>
+            <option value={SORT_OPTIONS.TITLE_ASC}>Title (A-Z)</option>
           </select>
-
-          <div className="ml-1 flex items-center gap-3">
-            <label htmlFor="project-sort" className="text-xs font-medium uppercase tracking-wide text-gray-500">
-              Sort By
-            </label>
-
-            <select
-              id="project-sort"
-              value={sortBy}
-              onChange={(event) => setSortBy(event.target.value)}
-              className="rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-sm text-gray-800 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
-            >
-              <option value={SORT_OPTIONS.PRIORITY_DESC}>Priority (High-Low)</option>
-              <option value={SORT_OPTIONS.PRIORITY_ASC}>Priority (Low-High)</option>
-              <option value={SORT_OPTIONS.DUE_DATE_ASC}>Due date (Soonest)</option>
-              <option value={SORT_OPTIONS.DUE_DATE_DESC}>Due date (Latest)</option>
-              <option value={SORT_OPTIONS.CREATED_AT_DESC}>Newest first</option>
-              <option value={SORT_OPTIONS.TITLE_ASC}>Title (A-Z)</option>
-            </select>
-          </div>
         </div>
       </div>
 
