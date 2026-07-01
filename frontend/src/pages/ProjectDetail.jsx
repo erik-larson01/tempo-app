@@ -1,7 +1,7 @@
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState, useRef } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, Check, ChevronDown, Pencil, SearchX, Trash2 } from 'lucide-react'
+import { ArrowLeft, Check, ChevronDown, Pencil, SearchX, Trash2, MoreHorizontal } from 'lucide-react'
 import ProjectModal from '../components/projects/ProjectModal'
 import DeleteProjectModal from '../components/projects/DeleteProjectModal'
 import ProjectsContext from '../contexts/ProjectsContext'
@@ -26,6 +26,10 @@ function ProjectDetail() {
   // State to track errors and error types for more specific error messaging and handling
   const [error, setError] = useState(null)
   const [errorType, setErrorType] = useState(null)
+
+  // State to track mobile menu open/close
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const mobileMenuRef = useRef(null)
 
   // States to track modal open/close
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
@@ -92,6 +96,22 @@ function ProjectDetail() {
 
     fetchProjectById()
   }, [id, getAccessTokenSilently])
+
+  // Closes the overflow menu when clicking outside the menu
+	useEffect(() => {
+		if (!isMobileMenuOpen) return
+
+    // Handler to detect clicks outside the menu and close it
+		const handleOutsideClick = (event) => {
+      const clickedInsideMobile = mobileMenuRef.current?.contains(event.target)
+
+      if (!clickedInsideMobile) setIsMobileMenuOpen(false)
+		}
+
+    // Add event listener when menu is open
+		document.addEventListener('pointerdown', handleOutsideClick)
+		return () => document.removeEventListener('pointerdown', handleOutsideClick)
+	}, [isMobileMenuOpen])
 
   // Formats the API dueDate string to readable text
   const formatDueDateLabel = (dateString) => {
@@ -554,7 +574,7 @@ function ProjectDetail() {
             Back to Projects
           </Link>
 
-          <div className="flex items-center gap-2">
+          <div className="hidden sm:flex items-center gap-2">
             <button
               type="button"
               onClick={() => setIsEditModalOpen(true)}
@@ -572,6 +592,46 @@ function ProjectDetail() {
               Delete Project
             </button>
           </div>
+
+          {/** Mobile Menu for Project Edit and Delete */}
+          <div ref={mobileMenuRef} className="relative sm:hidden">
+            <button
+              type="button"
+              onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+              className="rounded-md p-2 text-gray-500 hover:bg-gray-100"
+            >
+              <MoreHorizontal size={18} />
+            </button>
+
+            {isMobileMenuOpen && (
+              <div className="absolute right-0 top-[110%] z-30 w-36 rounded-md border border-gray-200 bg-white py-1 shadow-lg">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false)
+                    setIsEditModalOpen(true)
+                  }}
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-indigo-700 hover:bg-gray-100"
+                >
+                  <Pencil size={14} />
+                  Edit Project
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false)
+                    setIsDeleteModalOpen(true)
+                  }}
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-rose-700 hover:bg-rose-50"
+                >
+                  <Trash2 size={14} />
+                  Delete Project
+                </button>
+              </div>
+            )}
+          </div>
+
         </div>
 
         <div>
