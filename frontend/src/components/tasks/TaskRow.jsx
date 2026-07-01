@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from 'react'
 function TaskRow({task, isStatusUpdating = false, onToggleComplete, onStatusChange, onEdit, onDelete,}) {
 	const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
-	const menuRef = useRef(null)
+	const desktopMenuRef = useRef(null)
+  const mobileMenuRef = useRef(null)
 
 	// Closes the overflow menu when clicking outside the menu
 	useEffect(() => {
@@ -12,14 +13,17 @@ function TaskRow({task, isStatusUpdating = false, onToggleComplete, onStatusChan
 
     // Handler to detect clicks outside the menu and close it
 		const handleOutsideClick = (event) => {
-			if (menuRef.current && !menuRef.current.contains(event.target)) {
-				setIsMenuOpen(false)
-			}
+      const clickedInsideMobile = mobileMenuRef.current?.contains(event.target)
+      const clickedInsideDesktop = desktopMenuRef.current?.contains(event.target)
+
+      if (!clickedInsideMobile && !clickedInsideDesktop) {
+        setIsMenuOpen(false)
+      }
 		}
 
     // Add event listener when menu is open
-		document.addEventListener('mousedown', handleOutsideClick)
-		return () => document.removeEventListener('mousedown', handleOutsideClick)
+		document.addEventListener('pointerdown', handleOutsideClick)
+		return () => document.removeEventListener('pointerdown', handleOutsideClick)
 	}, [isMenuOpen])
 
 	// Formats the API dueDate string to readable text
@@ -49,6 +53,7 @@ function TaskRow({task, isStatusUpdating = false, onToggleComplete, onStatusChan
 	const getDueDateStyleInfo = (taskData) => {
 		if (taskData.status === 'COMPLETED') {
 			return {
+        shortLabel: 'Completed',
 				label: taskData.completedAt
 					? `Completed ${formatCompletedDateLabel(taskData.completedAt)}`
 					: 'Completed',
@@ -59,6 +64,7 @@ function TaskRow({task, isStatusUpdating = false, onToggleComplete, onStatusChan
 
 		if (!taskData.dueDate) {
 			return {
+				shortLabel: 'No due date',
 				label: 'No due date',
 				style: 'bg-gray-100 text-gray-500 ring-1 ring-gray-200',
 				leftAccent: '',
@@ -73,6 +79,7 @@ function TaskRow({task, isStatusUpdating = false, onToggleComplete, onStatusChan
 		const dayDifference = Math.floor(diffMs / (1000 * 60 * 60 * 24))
 		if (dayDifference < 0) {
 			return {
+        shortLabel: 'Overdue',
 				label: `Overdue ${formatDueDateLabel(taskData.dueDate)}`,
 				style: 'bg-rose-50 text-rose-700 ring-1 ring-rose-100',
 				leftAccent: 'border-l-4 border-l-rose-400',
@@ -81,6 +88,7 @@ function TaskRow({task, isStatusUpdating = false, onToggleComplete, onStatusChan
 
 		if (dayDifference === 0) {
 			return {
+        shortLabel: 'Due today',
 				label: 'Due today',
 				style: 'bg-amber-50 text-amber-700 ring-1 ring-amber-100',
 				leftAccent: 'border-l-4 border-l-amber-400',
@@ -88,6 +96,7 @@ function TaskRow({task, isStatusUpdating = false, onToggleComplete, onStatusChan
 		}
 
 		return {
+      shortLabel: `${dayDifference} ${dayDifference === 1 ? 'day' : 'days'} left`,
 			label: `${dayDifference} ${dayDifference === 1 ? 'day' : 'days'} left`,
 			style: 'bg-gray-100 text-gray-500 ring-1 ring-gray-200',
 			leftAccent: '',
@@ -149,7 +158,10 @@ function TaskRow({task, isStatusUpdating = false, onToggleComplete, onStatusChan
 
 	return (
 		<article
-			onClick={() => setIsExpanded((prev) => !prev)}
+				onClick={() => {
+					if (isMenuOpen) return
+					setIsExpanded((prev) => !prev)
+				}}
 			className={`group relative rounded-lg border border-gray-200 ${isCompleted ? 'bg-gray-50 border-gray-100' : 'bg-white'} px-3 py-2.5 transition-all duration-200 hover:shadow-sm hover:bg-gray-50/40 hover:border-gray-300 ${dueDateInfo.leftAccent} cursor-pointer`}
 		>
 			{/** Mobile layout */}
@@ -185,7 +197,7 @@ function TaskRow({task, isStatusUpdating = false, onToggleComplete, onStatusChan
 					</div>
 
 					{/** Mobile actions menu */}
-					<div ref={menuRef} className="relative shrink-0">
+					<div ref={mobileMenuRef} className="relative z-20 shrink-0">
 						<button
 							type="button"
 							onClick={(e) => {
@@ -198,7 +210,7 @@ function TaskRow({task, isStatusUpdating = false, onToggleComplete, onStatusChan
 						</button>
 
 						{isMenuOpen && (
-							<div className="absolute right-0 top-[110%] z-10 w-28 rounded-md border border-gray-200 bg-white py-1 shadow-lg">
+							<div className="absolute right-0 top-[110%] z-30 w-28 rounded-md border border-gray-200 bg-white py-1 shadow-lg pointer-events-auto">
 								<button
 									type="button"
 									onClick={(e) => {
@@ -231,7 +243,7 @@ function TaskRow({task, isStatusUpdating = false, onToggleComplete, onStatusChan
 				{/** Mobile metadata row */}
 				<div className="ml-1 mt-1.5 flex flex-wrap items-center gap-2" onClick={(e) => e.stopPropagation()}>
 					<span className={`rounded-full px-2 py-0.5 text-xs font-medium ${dueDateInfo.style}`}>
-						{dueDateInfo.label}
+						{dueDateInfo.shortLabel}
 					</span>
 					<span className="text-xs text-gray-400">{formattedEstimatedHours} hrs</span>
 
@@ -320,7 +332,7 @@ function TaskRow({task, isStatusUpdating = false, onToggleComplete, onStatusChan
 				</div>
 
 				{/** Button for Edit/Delete menu */}
-				<div ref={menuRef} className="relative shrink-0">
+					<div ref={desktopMenuRef} className="relative z-20 shrink-0">
 					<button
 						type="button"
 						onClick={(e) => {
@@ -334,7 +346,7 @@ function TaskRow({task, isStatusUpdating = false, onToggleComplete, onStatusChan
 
 					{/** Menu for Edit/Delete actions */}
 					{isMenuOpen && (
-						<div className="absolute right-0 top-[110%] z-10 w-28 rounded-md border border-gray-200 bg-white py-1 shadow-lg">
+							<div className="absolute right-0 top-[110%] z-30 w-28 rounded-md border border-gray-200 bg-white py-1 shadow-lg pointer-events-auto">
 							<button
 								type="button"
 								onClick={(e) => {
@@ -365,7 +377,7 @@ function TaskRow({task, isStatusUpdating = false, onToggleComplete, onStatusChan
 			</div>
 
 		  {/** Expanded task description when TaskRow is clicked */}
-      <div className={`overflow-hidden transition-all duration-300 ${isExpanded && task.description ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
+      <div className={`overflow-hidden transition-all duration-300 ${isExpanded && task.description ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
         <div className="ml-10 mt-2.5 border-t border-gray-100 pt-2.5">
           <p className={`text-xs leading-relaxed ${task.description ? 'text-gray-500' : 'text-gray-400 italic'} whitespace-pre-line`}>
             {task.description || 'No description added.'}
