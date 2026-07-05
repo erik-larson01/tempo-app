@@ -13,7 +13,7 @@ import {
 
 function Profile() {
   const { user, getAccessTokenSilently } = useAuth0()
-  const { currentUser, setCurrentUser, isUserLoading } = useContext(UserContext)
+  const { currentUser, setCurrentUser, refreshCurrentUser, isUserLoading } = useContext(UserContext)
   const [displayName, setDisplayName] = useState('')
   const [isSaving, setIsSaving] = useState(false)
   const [saveError, setSaveError] = useState(null)
@@ -54,10 +54,16 @@ function Profile() {
       })
     : 'N/A'
 
-  const completionRate = Number(currentUser?.completionRate || 0)
-  const totalProjects = Number(currentUser?.projectCount || 0)
-  const totalTasks = Number(currentUser?.taskCount || 0)
-  const completedTasks = Number(currentUser?.completedTaskCount || 0)
+  const lifetimeCompletedTasks = Number(currentUser?.lifetimeCompletedTasks || 0)
+  console.log('lifetimeCompletedTasks:', lifetimeCompletedTasks)
+  const lifetimeCreatedProjects = Number(currentUser?.lifetimeCreatedProjects || 0)
+  console.log('lifetimeCreatedProjects:', lifetimeCreatedProjects)
+
+  const allTasks = projects.flatMap(project => project.tasks ?? [])
+
+  const totalTasks = allTasks.length
+  const currentCompletedTasks = allTasks.filter(task => task.status === 'COMPLETED').length
+  const completionRate = totalTasks === 0 ? 0 : (currentCompletedTasks / totalTasks) * 100
 
   const profilePicture = user?.picture
   const fallbackInitial = (displayName || user?.name || 'Tempo User').charAt(0).toUpperCase()
@@ -109,7 +115,7 @@ function Profile() {
         <div className="px-6 py-6 sm:px-8">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-4">
-              <div className="hidden: sm:flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl border border-indigo-100 bg-white shadow-sm">
+              <div className="hidden sm:flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl border border-indigo-100 bg-white shadow-sm">
                 {profilePicture ? (
                   <img src={profilePicture} alt={displayName || 'Profile'} className="h-full w-full object-cover" />
                 ) : (
@@ -119,7 +125,7 @@ function Profile() {
 
               <div className="overflow-auto">
                 <p className="text-md font-medium text-gray-900">Profile</p>
-                <h1 className="truncate mt-1 text-2xl font-semibold text-gray-900 max-w-xs md:max-w-lvh">{displayName || 'Tempo User'}</h1>
+                <h1 className="truncate mt-1 text-2xl font-semibold text-gray-900 max-w-xs sm:max-w-sm lg:max-w-md">{displayName || 'Tempo User'}</h1>
                 <p className="mt-1 text-sm text-gray-600">Manage your identity and app preferences.</p>
               </div>
             </div>
@@ -165,7 +171,7 @@ function Profile() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Member since</label>
+                <label className="block text-sm font-medium text-gray-700">Member Since</label>
                 <div className="mt-2 rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700">
                   {memberSince}
                 </div>
@@ -191,23 +197,22 @@ function Profile() {
         <section className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
           <div className="flex items-center gap-2 text-md font-semibold text-gray-700">
             <BarChart3 size={15} />
-            Lifetime Tempo statistics
+            Tempo Statistics
           </div>
 
           <div className="mt-6 grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
             <div className="rounded-2xl bg-gray-50 p-4">
-              <p className="text-xs font-medium tracking-wide text-gray-500">Projects</p>
-              <p className="mt-2 text-3xl font-semibold text-gray-900">{totalProjects}</p>
+              <p className="text-xs font-medium tracking-wide text-gray-500">Lifetime Projects Created</p>
+              <p className="mt-2 text-3xl font-semibold text-gray-900">{lifetimeCreatedProjects}</p>
             </div>
             <div className="rounded-2xl bg-gray-50 p-4">
-              <p className="text-xs font-medium tracking-wide text-gray-500">Tasks completed</p>
-              <p className="mt-2 text-3xl font-semibold text-gray-900">{completedTasks}</p>
-              <p className="mt-1 text-sm text-gray-500">of {totalTasks} total tasks</p>
+              <p className="text-xs font-medium tracking-wide text-gray-500">Lifetime Tasks Completed</p>
+              <p className="mt-2 text-3xl font-semibold text-gray-900">{lifetimeCompletedTasks}</p>
             </div>
             <div className="rounded-2xl bg-gray-50 p-4">
-              <p className="text-xs font-medium tracking-wide text-gray-500">Completion rate</p>
+              <p className="text-xs font-medium tracking-wide text-gray-500">Task Completion Rate</p>
               <p className="mt-2 text-3xl font-semibold text-gray-900">{completionRate.toFixed(1)}%</p>
-              <p className="mt-1 text-sm text-gray-500">Across all projects and tasks</p>
+              <p className="mt-1 text-sm text-gray-500">Across your active tasks ({totalTasks})</p>
             </div>
           </div>
         </section>

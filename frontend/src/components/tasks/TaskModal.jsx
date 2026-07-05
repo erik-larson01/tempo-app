@@ -113,6 +113,11 @@ function TaskModal({mode, onClose, onTaskSaved, projectId,task = null}) {
 				}),
 			})
 
+      // Update the task's user's lifetime completed task count (backend will check if the task was newly completed)
+      if (isEditMode) {
+        await refreshCurrentUser()
+      }
+
 			// On error, retrieve the error message to display to the user
 			if (!response.ok) {
 				let message = isEditMode ? "Failed to update task." : "Failed to create task."

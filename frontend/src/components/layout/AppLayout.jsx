@@ -55,10 +55,34 @@ function AppLayout() {
     loadUserAndProjects()
   }, [])
 
+  // Function to refresh the current user's profile data (lifetime stats
+  const refreshCurrentUser = async () => {
+    try {
+      setIsUserLoading(true)
 
+      const accessToken = await getAccessTokenSilently()
+
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/users/me`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch user")
+      }
+
+      const userData = await response.json()
+      setCurrentUser(userData)
+    } catch (e) {
+      setError(e.message)
+    } finally {
+      setIsUserLoading(false)
+    }
+  }
 
   return (
-    <UserContext.Provider value={{ currentUser, setCurrentUser, isUserLoading }}>
+    <UserContext.Provider value={{ currentUser, setCurrentUser, refreshCurrentUser, isUserLoading }}>
       <ProjectsContext.Provider value={{ projects, setProjects, isLoading, error }}>
         <div className='flex flex-col h-screen'>
           <TopBar onMenuClick={() => setIsSidebarOpen(prev => !prev)} />

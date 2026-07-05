@@ -8,9 +8,11 @@ import ProjectsContext from '../contexts/ProjectsContext'
 import TaskModal from '../components/tasks/TaskModal'
 import TaskList from '../components/tasks/TaskList'
 import DeleteTaskModal from '../components/tasks/DeleteTaskModal'
+import UserContext from '../contexts/UserContext'
 
 function ProjectDetail() {
   const { getAccessTokenSilently } = useAuth0()
+  const { refreshCurrentUser } = useContext(UserContext)
 
   // Fixed preview length for description truncation
   const DESCRIPTION_PREVIEW_LENGTH = 180
@@ -420,6 +422,8 @@ function ProjectDetail() {
           },
         }
       )
+
+      refreshCurrentUser() // Update the user's lifetime completed task count (backend will check if the task was newly completed)
 
       if (!response.ok) {
         let message = 'Failed to update task status.'

@@ -1,7 +1,7 @@
 import { X, LoaderCircle } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useContext } from "react"
 import { useAuth0 } from '@auth0/auth0-react'
-
+import UserContext from "../../contexts/UserContext"
 // Default form values for both create and edit modes
 const getDefaultForm = () => ({
   title: "",
@@ -38,6 +38,7 @@ function ProjectModal({ mode, onClose, onProjectSaved, project = null }) {
   const { getAccessTokenSilently } = useAuth0()
   const [isLoading, setIsLoading] = useState(false)
   const [submitError, setSubmitError] = useState(null)
+  const { currentUser, setCurrentUser, refreshCurrentUser } = useContext(UserContext)
 
   // Form to be passed to API when creating/updating a project
   const [form, setForm] = useState(getDefaultForm)
@@ -133,6 +134,11 @@ function ProjectModal({ mode, onClose, onProjectSaved, project = null }) {
       }
 
       const savedProject = await response.json()
+
+      // Update the projects' user's lifetime project creation count if in create mode
+      if (!isEditMode) {
+        await refreshCurrentUser()
+      }
 
       onProjectSaved(savedProject)
       onClose()
