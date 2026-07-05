@@ -13,8 +13,6 @@ function TopBar({ onMenuClick }) {
   const dropdownRef = useRef(null)
   const navigate = useNavigate()
   const displayName = currentUser?.displayName || user?.nickname || 'Tempo User'
-  console.log("[TOPBAR] Current user:", currentUser)
-  console.log("[TOPBAR] Auth0 user:", user)
   const email = currentUser?.email || user?.email || 'No email available'
 
   // Close dropdown if user clicks outside of it
