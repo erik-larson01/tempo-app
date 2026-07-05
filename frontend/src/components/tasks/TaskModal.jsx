@@ -1,7 +1,8 @@
 import { X, LoaderCircle } from "lucide-react"
 import { useEffect, useState, useContext } from "react"
 import { useAuth0 } from '@auth0/auth0-react'
-import userContext from "../../contexts/UserContext"
+import UserContext from '../../contexts/UserContext'
+
 // Default form values for both create and edit modes
 const getDefaultForm = () => ({
 	title: "",
