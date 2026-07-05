@@ -212,7 +212,7 @@ function Profile() {
             <div className="rounded-2xl bg-gray-50 p-4">
               <p className="text-xs font-medium tracking-wide text-gray-500">Task Completion Rate</p>
               <p className="mt-2 text-3xl font-semibold text-gray-900">{completionRate.toFixed(1)}%</p>
-              <p className="mt-1 text-sm text-gray-500">Across your active tasks ({totalTasks})</p>
+              <p className="mt-1 text-sm text-gray-500">Across your active tasks ({currentCompletedTasks}/{totalTasks})</p>
             </div>
           </div>
         </section>
