@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Plus } from 'lucide-react'
 import ProgressBar from '../projects/ProgressBar'
 import TaskRow from './TaskRow'
+import { TASK_SORT_OPTIONS, USER_PREFERENCE_KEYS, readStoredPreference, writeStoredPreference } from '../../utils/userPreferences'
 
 function TaskList({tasks, onAddTask, onTaskToggleComplete, onTaskStatusChange, onTaskEdit,onTaskDelete, taskStatusUpdatingIds = []}) {
 	// Filter pill options to avoid hardcoding strings
@@ -14,26 +15,15 @@ function TaskList({tasks, onAddTask, onTaskToggleComplete, onTaskStatusChange, o
 		NO_DUE_DATE: 'NO_DUE_DATE',
 	}
 
-	// Sort options for task dropdown to keep option values centralized
-	const SORT_OPTIONS = {
-		DUE_DATE_ASC: 'dueDate-asc',
-		DUE_DATE_DESC: 'dueDate-desc',
-		DIFFICULTY_DESC: 'difficulty-desc',
-		ESTIMATED_HOURS_DESC: 'estimatedHours-desc',
-		STATUS_ASC: 'status-asc',
-	}
-
   const [selectedFilter, setSelectedFilter] = useState(() => {
     const saved = localStorage.getItem("tempo-task-list-filter");
     return saved !== null ? JSON.parse(saved) : FILTER_OPTIONS.ALL;
   });
   const [sortBy, setSortBy] = useState(() => {
-    const saved = localStorage.getItem("tempo-task-list-sort");
-    return saved !== null ? JSON.parse(saved) : SORT_OPTIONS.DUE_DATE_ASC;
+    return readStoredPreference(USER_PREFERENCE_KEYS.TASK_SORT, TASK_SORT_OPTIONS.DUE_DATE_ASC)
   });
   const [showCompleted, setShowCompleted] = useState(() => {
-    const saved = localStorage.getItem("tempo-task-list-show-completed");
-    return saved !== null ? JSON.parse(saved) : false;
+    return readStoredPreference(USER_PREFERENCE_KEYS.SHOW_COMPLETED_TASKS, false)
   });
 
   useEffect(() => {
@@ -41,11 +31,11 @@ function TaskList({tasks, onAddTask, onTaskToggleComplete, onTaskStatusChange, o
   }, [selectedFilter]);
 
   useEffect(() => {
-    localStorage.setItem("tempo-task-list-sort", JSON.stringify(sortBy));
+		writeStoredPreference(USER_PREFERENCE_KEYS.TASK_SORT, sortBy)
   }, [sortBy]);
 
   useEffect(() => {
-    localStorage.setItem("tempo-task-list-show-completed", JSON.stringify(showCompleted));
+		writeStoredPreference(USER_PREFERENCE_KEYS.SHOW_COMPLETED_TASKS, showCompleted)
   }, [showCompleted]);
 
   // Get task completion info for progress bar
@@ -134,23 +124,23 @@ function TaskList({tasks, onAddTask, onTaskToggleComplete, onTaskStatusChange, o
 		const aHasDueDate = Boolean(a?.dueDate)
 		const bHasDueDate = Boolean(b?.dueDate)
 
-		if (sortBy === SORT_OPTIONS.DUE_DATE_DESC) {
+		if (sortBy === TASK_SORT_OPTIONS.DUE_DATE_DESC) {
 			if (!aHasDueDate && !bHasDueDate) return 0
 			if (!aHasDueDate) return 1
 			if (!bHasDueDate) return -1
 			return getTimestamp(b.dueDate) - getTimestamp(a.dueDate)
 		}
 
-		if (sortBy === SORT_OPTIONS.DIFFICULTY_DESC) {
+		if (sortBy === TASK_SORT_OPTIONS.DIFFICULTY_DESC) {
 			return Number(b.difficulty) - Number(a.difficulty)
 		}
 
-		if (sortBy === SORT_OPTIONS.ESTIMATED_HOURS_DESC) {
+		if (sortBy === TASK_SORT_OPTIONS.ESTIMATED_HOURS_DESC) {
 			return Number(b.estimatedHours) - Number(a.estimatedHours)
 		}
 
     // Ensure not started comes first then in progress then completed for status sorting
-		if (sortBy === SORT_OPTIONS.STATUS_ASC) {
+		if (sortBy === TASK_SORT_OPTIONS.STATUS_ASC) {
 			const statusRank = {
 				NOT_STARTED: 0,
 				IN_PROGRESS: 1,
@@ -261,7 +251,6 @@ function TaskList({tasks, onAddTask, onTaskToggleComplete, onTaskStatusChange, o
 					type="button"
 					onClick={() => {
 						setSelectedFilter(FILTER_OPTIONS.ALL)
-						setShowCompleted(false)
 					}}
 					className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${selectedFilter === FILTER_OPTIONS.ALL ? 'bg-indigo-100 text-indigo-700 ring-1 ring-indigo-200' : 'bg-white text-gray-700 ring-1 ring-gray-200 hover:bg-gray-100'}`}
 				>
@@ -313,11 +302,11 @@ function TaskList({tasks, onAddTask, onTaskToggleComplete, onTaskStatusChange, o
 					onChange={(event) => setSortBy(event.target.value)}
 					className="shrink-0 rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-xs text-gray-800 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
 				>
-					<option value={SORT_OPTIONS.DUE_DATE_ASC}>Due date (Soonest)</option>
-					<option value={SORT_OPTIONS.DUE_DATE_DESC}>Due date (Latest)</option>
-					<option value={SORT_OPTIONS.DIFFICULTY_DESC}>Difficulty (Hardest)</option>
-					<option value={SORT_OPTIONS.ESTIMATED_HOURS_DESC}>Est. hours (Most)</option>
-					<option value={SORT_OPTIONS.STATUS_ASC}>Status</option>
+					<option value={TASK_SORT_OPTIONS.DUE_DATE_ASC}>Due date (Soonest)</option>
+					<option value={TASK_SORT_OPTIONS.DUE_DATE_DESC}>Due date (Latest)</option>
+					<option value={TASK_SORT_OPTIONS.DIFFICULTY_DESC}>Difficulty (Hardest)</option>
+					<option value={TASK_SORT_OPTIONS.ESTIMATED_HOURS_DESC}>Est. hours (Most)</option>
+					<option value={TASK_SORT_OPTIONS.STATUS_ASC}>Status</option>
 				</select>
 
 				{selectedFilter === FILTER_OPTIONS.ALL && completedTasksList.length > 0 && (

@@ -4,6 +4,7 @@ import ProjectModal from "../components/projects/ProjectModal"
 import ProjectsContext from "../contexts/ProjectsContext"
 import DeleteProjectModal from "../components/projects/DeleteProjectModal"
 import ProjectCard from "../components/projects/ProjectCard"
+import { PROJECT_SORT_OPTIONS, USER_PREFERENCE_KEYS, readStoredPreference, writeStoredPreference } from '../utils/userPreferences'
 
 function ProjectsOverview() {
   const { projects, setProjects } = useContext(ProjectsContext)
@@ -11,24 +12,13 @@ function ProjectsOverview() {
   // Default category filter option
   const ALL_CATEGORIES_OPTION = "ALL_CATEGORIES"
 
-  // List of sort options for project sort dropdown to avoid hardcoding strings
-  const SORT_OPTIONS = {
-    CREATED_AT_DESC: "createdAt-desc",
-    TITLE_ASC: "title-asc",
-    PRIORITY_ASC: "priority-asc",
-    PRIORITY_DESC: "priority-desc",
-    DUE_DATE_ASC: "dueDate-asc",
-    DUE_DATE_DESC: "dueDate-desc",
-  }
-
   // States to track status of modal
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
   const [sortBy, setSortBy] = useState(() => {
-    const saved = localStorage.getItem("tempo-projects-overview-sort");
-    return saved !== null ? JSON.parse(saved) : SORT_OPTIONS.PRIORITY_DESC;
+    return readStoredPreference(USER_PREFERENCE_KEYS.PROJECT_SORT, PROJECT_SORT_OPTIONS.PRIORITY_DESC)
   });
   const [titleSearch, setTitleSearch] = useState("")
   const [selectedCategory, setSelectedCategory] = useState(() => {
@@ -41,7 +31,7 @@ function ProjectsOverview() {
   });
 
   useEffect(() => {
-    localStorage.setItem("tempo-projects-overview-sort", JSON.stringify(sortBy));
+    writeStoredPreference(USER_PREFERENCE_KEYS.PROJECT_SORT, sortBy)
   }, [sortBy]);
 
   useEffect(() => {
@@ -120,26 +110,26 @@ function ProjectsOverview() {
 
   // Sorts projects based on the selected sort option in the dropdown
   const sortedProjects = [...filteredProjects].sort((a, b) => {
-    if (sortBy === SORT_OPTIONS.TITLE_ASC) {
+    if (sortBy === PROJECT_SORT_OPTIONS.TITLE_ASC) {
       return a.title.localeCompare(b.title, "en", {
         sensitivity: "base",
         numeric: true,
       })
     }
 
-    if (sortBy === SORT_OPTIONS.PRIORITY_ASC) {
+    if (sortBy === PROJECT_SORT_OPTIONS.PRIORITY_ASC) {
       return a.priority - b.priority
     }
 
-    if (sortBy === SORT_OPTIONS.DUE_DATE_ASC) {
+    if (sortBy === PROJECT_SORT_OPTIONS.DUE_DATE_ASC) {
       return getTimestamp(a.dueDate) - getTimestamp(b.dueDate)
     }
 
-    if (sortBy === SORT_OPTIONS.DUE_DATE_DESC) {
+    if (sortBy === PROJECT_SORT_OPTIONS.DUE_DATE_DESC) {
       return getTimestamp(b.dueDate) - getTimestamp(a.dueDate)
     }
 
-    if (sortBy === SORT_OPTIONS.CREATED_AT_DESC) {
+    if (sortBy === PROJECT_SORT_OPTIONS.CREATED_AT_DESC) {
       return getTimestamp(b.createdAt) - getTimestamp(a.createdAt)
     }
 
@@ -219,12 +209,12 @@ function ProjectsOverview() {
             onChange={(event) => setSortBy(event.target.value)}
             className="min-w-0 rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-sm text-gray-800 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
           >
-            <option value={SORT_OPTIONS.PRIORITY_DESC}>Priority (High-Low)</option>
-            <option value={SORT_OPTIONS.PRIORITY_ASC}>Priority (Low-High)</option>
-            <option value={SORT_OPTIONS.DUE_DATE_ASC}>Due date (Soonest)</option>
-            <option value={SORT_OPTIONS.DUE_DATE_DESC}>Due date (Latest)</option>
-            <option value={SORT_OPTIONS.CREATED_AT_DESC}>Newest first</option>
-            <option value={SORT_OPTIONS.TITLE_ASC}>Title (A-Z)</option>
+            <option value={PROJECT_SORT_OPTIONS.PRIORITY_DESC}>Priority (High-Low)</option>
+            <option value={PROJECT_SORT_OPTIONS.PRIORITY_ASC}>Priority (Low-High)</option>
+            <option value={PROJECT_SORT_OPTIONS.DUE_DATE_ASC}>Due date (Soonest)</option>
+            <option value={PROJECT_SORT_OPTIONS.DUE_DATE_DESC}>Due date (Latest)</option>
+            <option value={PROJECT_SORT_OPTIONS.CREATED_AT_DESC}>Newest first</option>
+            <option value={PROJECT_SORT_OPTIONS.TITLE_ASC}>Title (A-Z)</option>
           </select>
         </div>
       </div>

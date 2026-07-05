@@ -1,12 +1,21 @@
 import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { NavLink } from 'react-router-dom'
 import { useAuth0 } from '@auth0/auth0-react'
 import { LogOut, UserCircle2, Menu } from 'lucide-react'
+import UserContext from '../../contexts/UserContext'
+import { useContext } from 'react'
 
 function TopBar({ onMenuClick }) {
   const { user, logout } = useAuth0()
+  const { currentUser } = useContext(UserContext)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const dropdownRef = useRef(null)
+  const navigate = useNavigate()
+  const displayName = currentUser?.displayName || user?.nickname || 'Tempo User'
+  console.log("[TOPBAR] Current user:", currentUser)
+  console.log("[TOPBAR] Auth0 user:", user)
+  const email = currentUser?.email || user?.email || 'No email available'
 
   // Close dropdown if user clicks outside of it
   useEffect(() => {
@@ -51,12 +60,12 @@ function TopBar({ onMenuClick }) {
           {user?.picture ? (
             <img
               src={user.picture}
-              alt={user.name || 'User profile'}
+              alt={displayName}
               className="h-8 w-8 rounded-full object-cover"
             />
           ) : (
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-700">
-              {user?.name?.[0]?.toUpperCase() || 'U'}
+              {displayName?.[0]?.toUpperCase() || 'U'}
             </div>
           )}
         </button>
@@ -65,18 +74,18 @@ function TopBar({ onMenuClick }) {
         {isDropdownOpen && (
           <div className="absolute right-0 top-full z-50 mt-2 w-60 rounded-xl border border-gray-200 bg-white shadow-xl">
             <div className="border-b border-gray-100 px-4 py-3">
-              <p className="truncate text-sm font-semibold text-gray-900">{user?.name || 'Momentum User'}</p>
-              <p className="truncate text-xs text-gray-500">{user?.email || 'No email available'}</p>
+              <p className="truncate text-sm font-semibold text-gray-900">{displayName}</p>
+              <p className="truncate text-xs text-gray-500">{email}</p>
             </div>
 
             <div className="p-1.5">
               <button
                 type="button"
-                onClick={() => setIsDropdownOpen(false)}
+                onClick={() => navigate('/profile')}
                 className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-gray-700 transition-colors duration-200 hover:bg-gray-100"
               >
                 <UserCircle2 size={15} className="text-gray-500" />
-                Profile (coming soon!)
+                Profile
               </button>
 
               <button

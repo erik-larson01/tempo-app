@@ -8,6 +8,7 @@ import NotFound from './pages/NotFound'
 import { useAuth0 } from '@auth0/auth0-react'
 import LandingPage from './pages/LandingPage'
 import LoadingScreen from './components/common/LoadingScreen'
+import Profile from './pages/Profile'
 
 function App() {
   const { isLoading, isAuthenticated, error } = useAuth0()
@@ -35,6 +36,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/projects" element={<ProjectsOverview />} />
         <Route path="/projects/:id" element={<ProjectDetail />} />
+        <Route path="/profile" element={<Profile />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
