@@ -42,8 +42,7 @@ public class ProjectController {
      */
     @PostMapping
     public ResponseEntity<ProjectOutputDTO> createProject(@RequestBody @Valid ProjectInputDTO dto, @AuthenticationPrincipal Jwt jwt) {
-        String userId = jwt.getSubject();
-        ProjectOutputDTO createdProject = projectService.createProject(dto, userId);
+        ProjectOutputDTO createdProject = projectService.createProject(dto, jwt);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProject);
     }
 
@@ -54,8 +53,7 @@ public class ProjectController {
      */
     @GetMapping(path = "/{id}")
     public ResponseEntity<ProjectOutputDTO> getProjectById(@PathVariable @Positive Long id, @AuthenticationPrincipal Jwt jwt) {
-        String userId = jwt.getSubject();
-        ProjectOutputDTO project = projectService.getProjectById(id, userId);
+        ProjectOutputDTO project = projectService.getProjectById(id, jwt);
         return ResponseEntity.ok(project);
     }
 
@@ -65,8 +63,7 @@ public class ProjectController {
      */
     @GetMapping
     public ResponseEntity<List<ProjectOutputDTO>> getAllProjects(@AuthenticationPrincipal Jwt jwt) {
-        String userId = jwt.getSubject();
-        List<ProjectOutputDTO> allProjects = projectService.getAllProjects(userId);
+        List<ProjectOutputDTO> allProjects = projectService.getAllProjects(jwt);
         return ResponseEntity.ok(allProjects);
     }
 
@@ -77,8 +74,7 @@ public class ProjectController {
      */
     @GetMapping(path = "/category/{category}")
     public ResponseEntity<List<ProjectOutputDTO>> getProjectsByCategory(@PathVariable String category, @AuthenticationPrincipal Jwt jwt) {
-        String userId = jwt.getSubject();
-        List<ProjectOutputDTO> categoryProjects = projectService.getProjectsInCategory(category, userId);
+        List<ProjectOutputDTO> categoryProjects = projectService.getProjectsInCategory(category, jwt);
         return ResponseEntity.ok(categoryProjects);
     }
 
@@ -89,8 +85,7 @@ public class ProjectController {
      */
     @GetMapping(path = "/status")
     public ResponseEntity<List<ProjectOutputDTO>> getProjectsByStatus(@RequestParam @Valid Status status, @AuthenticationPrincipal Jwt jwt) {
-        String userId = jwt.getSubject();
-        List<ProjectOutputDTO> projectsByStatus = projectService.getProjectsByStatus(status, userId);
+        List<ProjectOutputDTO> projectsByStatus = projectService.getProjectsByStatus(status, jwt);
         return ResponseEntity.ok(projectsByStatus);
     }
 
@@ -101,8 +96,7 @@ public class ProjectController {
      */
     @GetMapping(path = "/due-in")
     public ResponseEntity<List<ProjectOutputDTO>> getProjectsDueInDays(@RequestParam @PositiveOrZero int days, @AuthenticationPrincipal Jwt jwt) {
-        String userId = jwt.getSubject();
-        List<ProjectOutputDTO> projectsDueIn = projectService.getProjectsDueInDays(days, userId);
+        List<ProjectOutputDTO> projectsDueIn = projectService.getProjectsDueInDays(days, jwt);
         return ResponseEntity.ok(projectsDueIn);
     }
 
@@ -112,8 +106,7 @@ public class ProjectController {
      */
     @GetMapping(path = "/completed")
     public ResponseEntity<List<ProjectOutputDTO>> getCompletedProjects(@AuthenticationPrincipal Jwt jwt) {
-        String userId = jwt.getSubject();
-        List<ProjectOutputDTO> completedProjects = projectService.getCompletedProjects(userId);
+        List<ProjectOutputDTO> completedProjects = projectService.getCompletedProjects(jwt);
         return ResponseEntity.ok(completedProjects);
     }
 
@@ -123,8 +116,7 @@ public class ProjectController {
      */
     @GetMapping(path = "/priority")
     public ResponseEntity<List<ProjectOutputDTO>> getProjectsSortedByPriority(@AuthenticationPrincipal Jwt jwt) {
-        String userId = jwt.getSubject();
-        List<ProjectOutputDTO> sortedProjects = projectService.getProjectsSortedByPriority(userId);
+        List<ProjectOutputDTO> sortedProjects = projectService.getProjectsSortedByPriority(jwt);
         return ResponseEntity.ok(sortedProjects);
     }
 
@@ -138,8 +130,7 @@ public class ProjectController {
     public ResponseEntity<ProjectOutputDTO> updateProject(@PathVariable @Positive Long id,
                                                           @RequestBody @Valid ProjectInputDTO dto,
                                                           @AuthenticationPrincipal Jwt jwt) {
-        String userId = jwt.getSubject();
-        ProjectOutputDTO updatedProject = projectService.updateProject(id, dto, userId);
+        ProjectOutputDTO updatedProject = projectService.updateProject(id, dto, jwt);
         return ResponseEntity.ok(updatedProject);
     }
 
@@ -156,8 +147,7 @@ public class ProjectController {
                                         message = "newStatus must be one of: NOT_STARTED, IN_PROGRESS, COMPLETED")
                                     String newStatus,
                                     @AuthenticationPrincipal Jwt jwt) {
-        String userId = jwt.getSubject();
-        ProjectOutputDTO updatedProject = projectService.updateProjectStatus(id, newStatus, userId);
+        ProjectOutputDTO updatedProject = projectService.updateProjectStatus(id, newStatus, jwt);
         return ResponseEntity.ok(updatedProject);
     }
 
@@ -167,8 +157,7 @@ public class ProjectController {
      */
     @PatchMapping(path = "/update-priorities")
     public ResponseEntity<Void> updateAllProjectPriorities(@AuthenticationPrincipal Jwt jwt) {
-        String userId = jwt.getSubject();
-        projectService.updateAllProjectPriorities(userId);
+        projectService.updateAllProjectPriorities(jwt);
         return ResponseEntity.noContent().build();
     }
 
@@ -179,8 +168,7 @@ public class ProjectController {
      */
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<Void> deleteProject(@PathVariable @Positive Long id, @AuthenticationPrincipal Jwt jwt) {
-        String userId = jwt.getSubject();
-        projectService.deleteProject(id, userId);
+        projectService.deleteProject(id, jwt);
         return ResponseEntity.noContent().build();
     }
 }

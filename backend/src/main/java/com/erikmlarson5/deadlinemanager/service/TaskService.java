@@ -5,6 +5,7 @@ import com.erikmlarson5.deadlinemanager.dto.ProjectOutputDTO;
 import com.erikmlarson5.deadlinemanager.dto.TaskOutputDTO;
 import com.erikmlarson5.deadlinemanager.entity.Project;
 import com.erikmlarson5.deadlinemanager.entity.Task;
+import com.erikmlarson5.deadlinemanager.entity.User;
 import com.erikmlarson5.deadlinemanager.repository.ProjectRepository;
 import com.erikmlarson5.deadlinemanager.repository.TaskRepository;
 import com.erikmlarson5.deadlinemanager.utils.ProjectMapper;
@@ -12,6 +13,7 @@ import com.erikmlarson5.deadlinemanager.utils.Status;
 import com.erikmlarson5.deadlinemanager.utils.TaskMapper;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -28,6 +30,7 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final ProjectRepository projectRepository;
     private final ProjectService projectService;
+    private final UserService userService;
 
     /**
      * Task service which connects to the repository layer
@@ -37,10 +40,11 @@ public class TaskService {
      */
     @Autowired
     public TaskService(TaskRepository taskRepository, ProjectRepository projectRepository,
-                       ProjectService projectService) {
+                       ProjectService projectService, UserService userService) {
         this.taskRepository = taskRepository;
         this.projectRepository = projectRepository;
         this.projectService = projectService;
+        this.userService = userService;
     }
 
     /**
@@ -49,11 +53,12 @@ public class TaskService {
      * @param dto the inputDTO of all task fields
      * @return an outputDTO of the saved task
      */
-    public ProjectOutputDTO createTask(Long projectId, TaskInputDTO dto, String userId) {
+    public ProjectOutputDTO createTask(Long projectId, TaskInputDTO dto, Jwt jwt) {
         validateDueDateForCreate(dto.getDueDate(), dto.getClientDate());
         validateStatusForCreate(dto.getStatus());
 
-        Project project = projectRepository.findByProjectIdAndUserId(projectId, userId)
+        User user = userService.getOrCreateUser(jwt);
+        Project project = projectRepository.findByProjectIdAndUser(projectId, user)
                 .orElseThrow(() -> new IllegalArgumentException("Project with id: " + projectId + " not " + "found!"));
 
         Task task = TaskMapper.toEntity(dto, project);
@@ -76,9 +81,10 @@ public class TaskService {
      * @param taskId the id of the task to be found
      * @return an outputDTO of the found task
      */
-    public TaskOutputDTO getTaskById(Long projectId, Long taskId, String userId) {
+    public TaskOutputDTO getTaskById(Long projectId, Long taskId, Jwt jwt) {
+        User user = userService.getOrCreateUser(jwt);
         Task task = taskRepository
-            .findByTaskIdAndProject_ProjectIdAndProject_UserId(taskId, projectId, userId)
+            .findByTaskIdAndProject_ProjectIdAndProject_User(taskId, projectId, user)
             .orElseThrow(() -> new IllegalArgumentException("Task not found"));
 
         return TaskMapper.toOutputDto(task);
@@ -88,8 +94,9 @@ public class TaskService {
      * Gets a list of all tasks across all projects
      * @return a list of all tasks, converted to outputDTOs
      */
-    public List<TaskOutputDTO> getAllTasks(String userId) {
-        List<Task> allTasks = taskRepository.findByProject_UserId(userId);
+    public List<TaskOutputDTO> getAllTasks(Jwt jwt) {
+        User user = userService.getOrCreateUser(jwt);
+        List<Task> allTasks = taskRepository.findByProject_User(user);
         List<TaskOutputDTO> allOutputDTOs = new ArrayList<>();
         for (Task task : allTasks) {
             allOutputDTOs.add(TaskMapper.toOutputDto(task));
@@ -102,8 +109,9 @@ public class TaskService {
      * @param status the status query to search by
      * @return a list of all tasks by specific status, converted to outputDTOs
      */
-    public List<TaskOutputDTO> getAllTasksByStatus(Status status, String userId) {
-        List<Task> allTasks = taskRepository.findByStatusAndProject_UserId(status, userId);
+    public List<TaskOutputDTO> getAllTasksByStatus(Status status, Jwt jwt) {
+        User user = userService.getOrCreateUser(jwt);
+        List<Task> allTasks = taskRepository.findByStatusAndProject_User(status, user);
         List<TaskOutputDTO> allOutputDTOs = new ArrayList<>();
         for (Task task : allTasks) {
             allOutputDTOs.add(TaskMapper.toOutputDto(task));
@@ -116,12 +124,13 @@ public class TaskService {
      * @param projectId the project to get all tasks from
      * @return a list of all tasks in a project, converted to outputDTOs
      */
-    public List<TaskOutputDTO> getTasksInProject(Long projectId, String userId) {
+    public List<TaskOutputDTO> getTasksInProject(Long projectId, Jwt jwt) {
         // ensures project belongs to user and returns tasks for that project
-        projectRepository.findByProjectIdAndUserId(projectId, userId)
+        User user = userService.getOrCreateUser(jwt);
+        projectRepository.findByProjectIdAndUser(projectId, user)
                 .orElseThrow(() -> new IllegalArgumentException("Project with id: " + projectId + " not found!"));
 
-        List<Task> allTasks = taskRepository.findByProject_ProjectIdAndProject_UserId(projectId, userId);
+        List<Task> allTasks = taskRepository.findByProject_ProjectIdAndProject_User(projectId, user);
         List<TaskOutputDTO> allOutputDTOs = new ArrayList<>();
         for (Task task : allTasks) {
             allOutputDTOs.add(TaskMapper.toOutputDto(task));
@@ -134,11 +143,12 @@ public class TaskService {
      * @param projectId the project to get all incomplete tasks from
      * @return a list of all incomplete tasks in a project, converted to outputDTOs
      */
-    public List<TaskOutputDTO> getIncompleteTasksInProject(Long projectId, String userId) {
-        projectRepository.findByProjectIdAndUserId(projectId, userId)
+    public List<TaskOutputDTO> getIncompleteTasksInProject(Long projectId, Jwt jwt) {
+        User user = userService.getOrCreateUser(jwt);
+        projectRepository.findByProjectIdAndUser(projectId, user)
                 .orElseThrow(() -> new IllegalArgumentException("Project with id: " + projectId + " not found!"));
 
-        List<Task> allTasks = taskRepository.findByProject_ProjectIdAndProject_UserId(projectId, userId);
+        List<Task> allTasks = taskRepository.findByProject_ProjectIdAndProject_User(projectId, user);
         List<TaskOutputDTO> incompleteTasks = new ArrayList<>();
 
         for (Task task : allTasks) {
@@ -157,9 +167,10 @@ public class TaskService {
      * @param dto an inputDTO object of all fields to replace
      * @return an outputDTO of the updated and saved task
      */
-    public ProjectOutputDTO updateTask(Long projectId, Long taskId, TaskInputDTO dto, String userId) {
+    public ProjectOutputDTO updateTask(Long projectId, Long taskId, TaskInputDTO dto, Jwt jwt) {
+        User user = userService.getOrCreateUser(jwt);
         Task existingTask = taskRepository
-                .findByTaskIdAndProject_ProjectIdAndProject_UserId(taskId, projectId, userId)
+                .findByTaskIdAndProject_ProjectIdAndProject_User(taskId, projectId, user)
                 .orElseThrow(() -> new NoSuchElementException("Task with id " + taskId + " not " +
                         "found"));
 
@@ -234,9 +245,10 @@ public class TaskService {
      * @param newStatus the new status to change to
      * @return an outputDTO of the updated and saved task
      */
-    public ProjectOutputDTO updateTaskStatus(Long projectId, Long taskId, String newStatus, String userId) {
+    public ProjectOutputDTO updateTaskStatus(Long projectId, Long taskId, String newStatus, Jwt jwt) {
+        User user = userService.getOrCreateUser(jwt);
         Task task = taskRepository
-            .findByTaskIdAndProject_ProjectIdAndProject_UserId(taskId, projectId, userId)
+            .findByTaskIdAndProject_ProjectIdAndProject_User(taskId, projectId, user)
             .orElseThrow(() -> new NoSuchElementException("Task with id " + taskId + " not found!"));
 
         task.setStatus(Status.valueOf(newStatus.toUpperCase()));
@@ -254,9 +266,10 @@ public class TaskService {
      * @param projectId the id of the associated project
      * @param taskId the id of the task to delete
      */
-    public ProjectOutputDTO deleteTask(Long projectId, Long taskId, String userId) {
+    public ProjectOutputDTO deleteTask(Long projectId, Long taskId, Jwt jwt) {
+        User user = userService.getOrCreateUser(jwt);
         Task task = taskRepository
-            .findByTaskIdAndProject_ProjectIdAndProject_UserId(taskId, projectId, userId)
+            .findByTaskIdAndProject_ProjectIdAndProject_User(taskId, projectId, user)
             .orElseThrow(() -> new NoSuchElementException("Task with id " + taskId + " not found!"));
 
         Project project = task.getProject();

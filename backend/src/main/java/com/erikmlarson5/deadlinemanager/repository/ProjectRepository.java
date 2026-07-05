@@ -1,6 +1,7 @@
 package com.erikmlarson5.deadlinemanager.repository;
 
 import com.erikmlarson5.deadlinemanager.entity.Project;
+import com.erikmlarson5.deadlinemanager.entity.User;
 import com.erikmlarson5.deadlinemanager.utils.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -14,17 +15,19 @@ import java.util.Optional;
  */
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
-  Optional<Project> findByProjectIdAndUserId(Long projectId, String userId);
+  Optional<Project> findByProjectIdAndUser(Long projectId, User user);
 
-    List<Project> findByUserId(String userId);
+    List<Project> findByUser(User user);
 
-    List<Project> findByCategoryIgnoreCaseAndUserId(String category, String userId);
+    long countByUser(User user);
 
-    List<Project> findByStatusAndUserId(Status status, String userId);
+    List<Project> findByCategoryIgnoreCaseAndUser(String category, User user);
 
-    List<Project> findByDueDateBetweenAndUserId(LocalDate start, LocalDate end, String userId);
+    List<Project> findByStatusAndUser(Status status, User user);
 
-    List<Project> findAllByUserIdOrderByPriorityDesc(String userId);
+    List<Project> findByDueDateBetweenAndUser(LocalDate start, LocalDate end, User user);
 
-    boolean existsByTitleAndUserId(String title, String userId);
+    List<Project> findAllByUserOrderByPriorityDesc(User user);
+
+    boolean existsByTitleAndUser(String title, User user);
 }
