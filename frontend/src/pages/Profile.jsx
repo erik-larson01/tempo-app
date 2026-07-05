@@ -55,9 +55,7 @@ function Profile() {
     : 'N/A'
 
   const lifetimeCompletedTasks = Number(currentUser?.lifetimeCompletedTasks || 0)
-  console.log('lifetimeCompletedTasks:', lifetimeCompletedTasks)
   const lifetimeCreatedProjects = Number(currentUser?.lifetimeCreatedProjects || 0)
-  console.log('lifetimeCreatedProjects:', lifetimeCreatedProjects)
 
   const allTasks = projects.flatMap(project => project.tasks ?? [])
 
