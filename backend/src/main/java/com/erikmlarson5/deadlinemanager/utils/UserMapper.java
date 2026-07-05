@@ -12,15 +12,14 @@ public class UserMapper {
      * @param user the user entity to be converted
      * @return the entity in outputDTO form
      */
-    public static UserOutputDTO toOutputDto(User user, long projectCount, long taskCount, long completedTaskCount) {
+    public static UserOutputDTO toOutputDto(User user) {
         UserOutputDTO dto = new UserOutputDTO();
         dto.setDisplayName(user.getDisplayName());
         dto.setEmail(user.getEmail());
         dto.setCreatedAt(user.getCreatedAt());
-        dto.setProjectCount(projectCount);
-        dto.setTaskCount(taskCount);
-        dto.setCompletedTaskCount(completedTaskCount);
-        dto.setCompletionRate(taskCount == 0 ? 0.0 : Math.round((completedTaskCount * 1000.0 / taskCount)) / 10.0);
+        dto.setLifetimeCompletedTasks(user.getLifetimeCompletedTasks());
+        dto.setLifetimeCreatedProjects(user.getLifetimeCreatedProjects());
+        
         return dto;
     }
 }

@@ -62,8 +62,9 @@ public class ProjectService {
         Project savedProject = projectRepository.save(project);
 
         user.incrementLifetimeCreatedProjects();
+
         userRepository.save(user);
-        
+
         return ProjectMapper.toOutputDto(savedProject);
     }
 
@@ -192,8 +193,7 @@ public class ProjectService {
     }
 
     /**
-     * Fully updates all fields of a project, replacing every value and field including priority
-     * and tasks
+     * Fully updates all editable fields of a project and recalculates its priority
      * @param id the id of the project to update
      * @param dto an inputDTO object of all fields to replace
      * @return an outputDTO of the updated and saved task

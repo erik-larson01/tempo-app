@@ -8,6 +8,7 @@ import com.erikmlarson5.deadlinemanager.entity.Task;
 import com.erikmlarson5.deadlinemanager.entity.User;
 import com.erikmlarson5.deadlinemanager.repository.ProjectRepository;
 import com.erikmlarson5.deadlinemanager.repository.TaskRepository;
+import com.erikmlarson5.deadlinemanager.repository.UserRepository;
 import com.erikmlarson5.deadlinemanager.utils.ProjectMapper;
 import com.erikmlarson5.deadlinemanager.utils.Status;
 import com.erikmlarson5.deadlinemanager.utils.TaskMapper;
@@ -29,6 +30,7 @@ import java.util.NoSuchElementException;
 public class TaskService {
     private final TaskRepository taskRepository;
     private final ProjectRepository projectRepository;
+    private final UserRepository userRepository;
     private final ProjectService projectService;
     private final UserService userService;
 
@@ -40,11 +42,12 @@ public class TaskService {
      */
     @Autowired
     public TaskService(TaskRepository taskRepository, ProjectRepository projectRepository,
-                       ProjectService projectService, UserService userService) {
+                       ProjectService projectService, UserService userService, UserRepository userRepository) {
         this.taskRepository = taskRepository;
         this.projectRepository = projectRepository;
         this.projectService = projectService;
         this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -173,7 +176,7 @@ public class TaskService {
                 .findByTaskIdAndProject_ProjectIdAndProject_User(taskId, projectId, user)
                 .orElseThrow(() -> new NoSuchElementException("Task with id " + taskId + " not " +
                         "found"));
-
+        Status previousStatus = existingTask.getStatus();
         Project project = existingTask.getProject();
 
         validateDueDateForUpdate(existingTask, dto.getDueDate());
@@ -186,12 +189,62 @@ public class TaskService {
         existingTask.setStatus(Status.valueOf(dto.getStatus().toUpperCase()));
         existingTask.setProject(project);
 
+        incrementLifetimeCompletedTasksIfNeeded(existingTask, previousStatus, user);
+        
         taskRepository.saveAndFlush(existingTask);
+    
+        float newPriority = projectService.calculatePriority(project);
+        project.setPriority(newPriority);
+        Project savedProject = projectRepository.saveAndFlush(project);
+        return ProjectMapper.toOutputDto(savedProject);
+    }
+
+    /**
+     * Updates only a task's enum status
+     * @param projectId the id of the associated project
+     * @param taskId the id of the task to update
+     * @param newStatus the new status to change to
+     * @return an outputDTO of the updated and saved task
+     */
+    public ProjectOutputDTO updateTaskStatus(Long projectId, Long taskId, String newStatus, Jwt jwt) {
+        User user = userService.getOrCreateUser(jwt);
+        Task task = taskRepository
+            .findByTaskIdAndProject_ProjectIdAndProject_User(taskId, projectId, user)
+            .orElseThrow(() -> new NoSuchElementException("Task with id " + taskId + " not found!"));
+        Status previousStatus = task.getStatus();
+
+        task.setStatus(Status.valueOf(newStatus.toUpperCase()));
+        incrementLifetimeCompletedTasksIfNeeded(task, previousStatus, user);
+
+        taskRepository.saveAndFlush(task);
+
+        Project project = task.getProject();
+        project.setPriority(projectService.calculatePriority(project));
+        Project savedProject = projectRepository.saveAndFlush(project);
+
+
+        return ProjectMapper.toOutputDto(savedProject);
+    }
+
+    /**
+     * Deletes a task in the database
+     * @param projectId the id of the associated project
+     * @param taskId the id of the task to delete
+     */
+    public ProjectOutputDTO deleteTask(Long projectId, Long taskId, Jwt jwt) {
+        User user = userService.getOrCreateUser(jwt);
+        Task task = taskRepository
+            .findByTaskIdAndProject_ProjectIdAndProject_User(taskId, projectId, user)
+            .orElseThrow(() -> new NoSuchElementException("Task with id " + taskId + " not found!"));
+
+        Project project = task.getProject();
+
+        // Orphan removal handles the deletion of the task when removed from the project
+        project.removeTask(task);
 
         float newPriority = projectService.calculatePriority(project);
         project.setPriority(newPriority);
         Project savedProject = projectRepository.saveAndFlush(project);
-
         return ProjectMapper.toOutputDto(savedProject);
     }
 
@@ -239,47 +292,16 @@ public class TaskService {
     }
 
     /**
-     * Updates only a task's enum status
-     * @param projectId the id of the associated project
-     * @param taskId the id of the task to update
-     * @param newStatus the new status to change to
-     * @return an outputDTO of the updated and saved task
+     * Increments the user's lifetime completed tasks count if the task's status has changed to COMPLETED and it has never been completed before.
+     * @param task the task being updated
+     * @param previousStatus the previous status of the task before the update
+     * @param user the user associated with the task
      */
-    public ProjectOutputDTO updateTaskStatus(Long projectId, Long taskId, String newStatus, Jwt jwt) {
-        User user = userService.getOrCreateUser(jwt);
-        Task task = taskRepository
-            .findByTaskIdAndProject_ProjectIdAndProject_User(taskId, projectId, user)
-            .orElseThrow(() -> new NoSuchElementException("Task with id " + taskId + " not found!"));
-
-        task.setStatus(Status.valueOf(newStatus.toUpperCase()));
-        taskRepository.saveAndFlush(task);
-
-        Project project = task.getProject();
-        project.setPriority(projectService.calculatePriority(project));
-        Project savedProject = projectRepository.saveAndFlush(project);
-
-        return ProjectMapper.toOutputDto(savedProject);
-    }
-
-    /**
-     * Deletes a task in the database
-     * @param projectId the id of the associated project
-     * @param taskId the id of the task to delete
-     */
-    public ProjectOutputDTO deleteTask(Long projectId, Long taskId, Jwt jwt) {
-        User user = userService.getOrCreateUser(jwt);
-        Task task = taskRepository
-            .findByTaskIdAndProject_ProjectIdAndProject_User(taskId, projectId, user)
-            .orElseThrow(() -> new NoSuchElementException("Task with id " + taskId + " not found!"));
-
-        Project project = task.getProject();
-
-        // Orphan removal handles the deletion of the task when removed from the project
-        project.removeTask(task);
-
-        float newPriority = projectService.calculatePriority(project);
-        project.setPriority(newPriority);
-        Project savedProject = projectRepository.saveAndFlush(project);
-        return ProjectMapper.toOutputDto(savedProject);
+    private void incrementLifetimeCompletedTasksIfNeeded(Task task, Status previousStatus, User user) {
+        if (task.getStatus() == Status.COMPLETED && previousStatus != Status.COMPLETED && !task.hasBeenCompleted()) {
+            task.setHasBeenCompleted(true);
+            user.incrementLifetimeCompletedTasks();
+            userRepository.save(user);
+        }
     }
 }

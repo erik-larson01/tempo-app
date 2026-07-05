@@ -44,6 +44,9 @@ public class Task {
     @Column(name = "completed_at")
     private OffsetDateTime completedAt;
 
+    @Column(nullable = false)
+    private boolean hasBeenCompleted = false;
+
     @Enumerated(EnumType.STRING)
     private Status status;
 
@@ -139,6 +142,14 @@ public class Task {
 
     public OffsetDateTime getCompletedAt() {
         return completedAt;
+    }
+
+    public boolean hasBeenCompleted() {
+        return hasBeenCompleted;
+    }
+
+    public void setHasBeenCompleted(boolean hasBeenCompleted) {
+        this.hasBeenCompleted = hasBeenCompleted;
     }
 
     public Float getEstimatedHours() { return estimatedHours; }

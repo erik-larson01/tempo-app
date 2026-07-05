@@ -6,7 +6,6 @@ import com.erikmlarson5.deadlinemanager.entity.User;
 import com.erikmlarson5.deadlinemanager.repository.ProjectRepository;
 import com.erikmlarson5.deadlinemanager.repository.TaskRepository;
 import com.erikmlarson5.deadlinemanager.repository.UserRepository;
-import com.erikmlarson5.deadlinemanager.utils.Status;
 import com.erikmlarson5.deadlinemanager.utils.UserMapper;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +21,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 @Transactional
 public class UserService {
     private final UserRepository userRepository;
-    private final ProjectRepository projectRepository;
-    private final TaskRepository taskRepository;
 
     private final String NAMESPACE = "https://withtempo.app/";
 
@@ -37,8 +34,6 @@ public class UserService {
     public UserService(UserRepository userRepository, ProjectRepository projectRepository,
                        TaskRepository taskRepository) {
         this.userRepository = userRepository;
-        this.projectRepository = projectRepository;
-        this.taskRepository = taskRepository;
     }
 
     /**
@@ -68,7 +63,7 @@ public class UserService {
 
         user.setDisplayName(displayName);
         userRepository.saveAndFlush(user);
-        return buildUserOutput(user);
+        return UserMapper.toOutputDto(user);
     }
 
     /**
@@ -100,20 +95,9 @@ public class UserService {
      */
     public UserOutputDTO getCurrentUserProfile(Jwt jwt) {
         User user = getOrCreateUser(jwt);
-        return buildUserOutput(user);
+        return UserMapper.toOutputDto(user);
     }
 
-    /**
-     * Helper method to build a UserOutputDTO with lifetime statistics attached
-     * @param user the user entity
-     * @return the user profile and lifetime statistics in outputDTO form
-     */
-    private UserOutputDTO buildUserOutput(User user) {
-        long projectCount = projectRepository.countByUser(user);
-        long taskCount = taskRepository.countByProject_User(user);
-        long completedTaskCount = taskRepository.countByStatusAndProject_User(Status.COMPLETED, user);
-        return UserMapper.toOutputDto(user, projectCount, taskCount, completedTaskCount);
-    }
 
     /**
      * Helper method to sync missing profile fields from the JWT to the user entity.

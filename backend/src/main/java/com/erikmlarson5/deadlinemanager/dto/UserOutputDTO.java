@@ -9,10 +9,8 @@ public class UserOutputDTO {
     private String displayName;
     private String email;
     private OffsetDateTime createdAt;
-    private long projectCount;
-    private long taskCount;
-    private long completedTaskCount;
-    private double completionRate;
+    private long lifetimeCompletedTasks;
+    private long lifetimeCreatedProjects;
 
     public String getDisplayName() {
         return displayName;
@@ -38,35 +36,19 @@ public class UserOutputDTO {
         this.createdAt = createdAt;
     }
 
-    public long getProjectCount() {
-        return projectCount;
+    public long getLifetimeCompletedTasks() {
+        return lifetimeCompletedTasks;
     }
 
-    public void setProjectCount(long projectCount) {
-        this.projectCount = projectCount;
+    public void setLifetimeCompletedTasks(long lifetimeCompletedTasks) {
+        this.lifetimeCompletedTasks = lifetimeCompletedTasks;
     }
 
-    public long getTaskCount() {
-        return taskCount;
+    public long getLifetimeCreatedProjects() {
+        return lifetimeCreatedProjects;
     }
 
-    public void setTaskCount(long taskCount) {
-        this.taskCount = taskCount;
-    }
-
-    public long getCompletedTaskCount() {
-        return completedTaskCount;
-    }
-
-    public void setCompletedTaskCount(long completedTaskCount) {
-        this.completedTaskCount = completedTaskCount;
-    }
-
-    public double getCompletionRate() {
-        return completionRate;
-    }
-
-    public void setCompletionRate(double completionRate) {
-        this.completionRate = completionRate;
+    public void setLifetimeCreatedProjects(long lifetimeCreatedProjects) {
+        this.lifetimeCreatedProjects = lifetimeCreatedProjects;
     }
 }
