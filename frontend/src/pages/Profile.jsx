@@ -200,7 +200,7 @@ function Profile() {
             Tempo Statistics
           </div>
 
-          <div className="mt-6 grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
+          <div className="mt-6 grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
             <div className="rounded-2xl bg-gray-50 p-4">
               <p className="text-xs font-medium tracking-wide text-gray-500">Lifetime Projects Created</p>
               <p className="mt-2 text-3xl font-semibold text-gray-900">{lifetimeCreatedProjects}</p>
