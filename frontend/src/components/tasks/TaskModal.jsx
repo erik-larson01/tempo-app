@@ -1,7 +1,7 @@
 import { X, LoaderCircle } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useContext } from "react"
 import { useAuth0 } from '@auth0/auth0-react'
-
+import userContext from "../../contexts/UserContext"
 // Default form values for both create and edit modes
 const getDefaultForm = () => ({
 	title: "",
@@ -36,6 +36,7 @@ function TaskModal({mode, onClose, onTaskSaved, projectId,task = null}) {
   const { getAccessTokenSilently } = useAuth0()
 	const [isLoading, setIsLoading] = useState(false)
 	const [submitError, setSubmitError] = useState(null)
+  const { refreshCurrentUser } = useContext(UserContext)
 
 	// Form to be passed to API when creating/updating a task
 	const [form, setForm] = useState(getDefaultForm)
