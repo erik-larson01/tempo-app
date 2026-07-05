@@ -80,7 +80,7 @@ function LandingPage({ error }) {
                 onClick={() => loginWithRedirect({authorizationParams: { screen_hint: 'signup' } })}
                 className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white transition duration-200 hover:bg-indigo-700"
               >
-                Start Planning
+                Create Account
                 <ArrowRight size={16} />
               </button>
               <button
@@ -88,7 +88,7 @@ function LandingPage({ error }) {
                 onClick={() => loginWithRedirect({ authorizationParams: { screen_hint: 'login' } })}
                 className="rounded-lg border border-indigo-200 bg-white px-6 py-3 text-sm font-medium text-gray-700 transition duration-200 hover:bg-indigo-50"
               >
-                I already have an account
+                Sign in
               </button>
             </div>
 
@@ -168,7 +168,7 @@ function LandingPage({ error }) {
           </a>
 
           <span className="mx-3 text-gray-300">|</span>
-          
+
           <a href="https://github.com/erik-larson01" target="_blank" rel="noopener noreferrer" className="font-medium text-indigo-600 hover:underline">
             GitHub
           </a>
