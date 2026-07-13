@@ -32,8 +32,6 @@ import org.springframework.validation.annotation.Validated;
 public class ICSImportController {
     private final ICSImportService icsImportService;
 
-    // This controller is currently a placeholder for future ICS import functionality.
-
     @Autowired
     public ICSImportController(ICSImportService icsImportService, UserService userService, ProjectService projectService) {
         this.icsImportService = icsImportService;
