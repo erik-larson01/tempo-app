@@ -91,25 +91,10 @@ public class ICSImportService {
      */
     public ICSImportResultDTO importProjectsFromICS(List<ProjectInputDTO> selectedItems,Jwt jwt) {
         List<ProjectOutputDTO> created = new ArrayList<>();
-        List<String> skipped = new ArrayList<>();
-        List<String> errors = new ArrayList<>();
 
         for (ProjectInputDTO dto : selectedItems) {
-            try {
-                // Reuse all existing project creation logic:
-                // duplicate check, priority calculation, user association, DB save
-                ProjectOutputDTO project = projectService.createProject(dto, jwt);
-                created.add(project);
-
-            } catch (IllegalStateException e) {
-                // Duplicate title — this user already has a project with this name
-                // This can happen if the user ignored the alreadyExists warning on the frontend
-                skipped.add(dto.getTitle());
-
-            } catch (Exception e) {
-                // Any other error — record it but continue with remaining items
-                errors.add(dto.getTitle() + ": " + e.getMessage());
-            }
+            ProjectOutputDTO project = projectService.createProject(dto, jwt);
+            created.add(project);
         }
 
         return new ICSImportResultDTO(created);
@@ -165,6 +150,7 @@ public class ICSImportService {
 
     /**
      * Validates the ICS URL before making any external request.
+     * Prevents SSRF attacks by blocking internal/private addresses.
      */
     private void validateUrl(String url) {
         if (url == null || url.isBlank()) {
@@ -188,6 +174,14 @@ public class ICSImportService {
             throw new IllegalArgumentException("URL must have a valid host");
         }
 
+        // Block internal addresses prevents SSRF attacks by disallowing localhost
+        if (host.equals("localhost") ||
+            host.equals("127.0.0.1") ||
+            host.startsWith("192.168.") ||
+            host.startsWith("10.") ||
+            host.startsWith("172.16.")) {
+            throw new IllegalArgumentException("Invalid URL");
+        }
     }
 
     /**
