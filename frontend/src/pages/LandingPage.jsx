@@ -62,7 +62,7 @@ function LandingPage({ error }) {
           <section className="animate-fade-up space-y-8">
             <div className="space-y-4">
               <h1 className="max-w-xl text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
-                Project management that helps you decide what matters next.
+                Project management that helps you decide what to work on next.
               </h1>
               <p className="max-w-xl text-base leading-relaxed text-gray-600 sm:text-lg">
                 Tempo helps students organize projects, track progress, and prioritize tasks based on deadlines, workload, and completion status.
