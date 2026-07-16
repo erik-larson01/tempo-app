@@ -65,6 +65,12 @@ public class ICSImportService {
         // Parse the ICS content into preview items
         List<ICSPreviewItemDTO> items = icsParser.parse(icsContent, timezone, today);
 
+        if (items.isEmpty()) {
+            throw new IllegalArgumentException(
+                "No upcoming assignments were found in this calendar."
+            );
+        }
+
         // Get all existing project titles for this user to check for duplicates
         Set<String> existingTitles = projectRepository.findByUser(user)
                 .stream()
@@ -120,30 +126,29 @@ public class ICSImportService {
 
             if (response.statusCode() != 200) {
                 throw new IllegalArgumentException(
-                    "Calendar server returned status " + response.statusCode() +
-                    ". Check that your calendar URL is correct and still valid."
+                    "We couldn't access your calendar. Make sure your calendar URL is correct and still active. Check that your calendar URL is correct and still valid."
                 );
             }
 
             String body = response.body();
             if (body == null || body.isBlank()) {
-                throw new IllegalArgumentException("Calendar URL returned empty content.");
+                throw new IllegalArgumentException("Your calendar URL did not contain any data. Make sure your calendar URL is correct and still active.");
             }
 
             // Check beginning of ICS file as ICS files always start with BEGIN:VCALENDAR
             if (!body.contains("BEGIN:VCALENDAR")) {
                 throw new IllegalArgumentException(
-                    "URL did not return a valid calendar file. Make sure you copied the calendar feed URL, not a regular webpage URL."
+                    "That URL doesn't appear to be a calendar feed. Make sure you copied your LMS calendar feed URL rather than a regular webpage."
                 );
             }
 
             return body;
 
         } catch (IllegalArgumentException e) {
-            throw e;  // re-throw our own errors as-is
+            throw e; // Re-throw known validation exceptions
         } catch (Exception e) {
             throw new IllegalArgumentException(
-                "Could not fetch calendar from URL: " + e.getMessage()
+                "We couldn't connect to your calendar. Please check your internet connection and try again."
             );
         }
     }
@@ -154,24 +159,24 @@ public class ICSImportService {
      */
     private void validateUrl(String url) {
         if (url == null || url.isBlank()) {
-            throw new IllegalArgumentException("URL is required");
+            throw new IllegalArgumentException("Please enter a calendar URL");
         }
 
         URI uri;
         try {
             uri = URI.create(url);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid URL format");
+            throw new IllegalArgumentException("Please enter a valid calendar URL");
         }
 
         String scheme = uri.getScheme();
         if (!"https".equals(scheme) && !"http".equals(scheme)) {
-            throw new IllegalArgumentException("URL must use http or https");
+            throw new IllegalArgumentException("Calendar URLs must begin with http:// or https://");
         }
 
         String host = uri.getHost();
         if (host == null || host.isBlank()) {
-            throw new IllegalArgumentException("URL must have a valid host");
+            throw new IllegalArgumentException("Please enter a complete calendar URL");
         }
 
         // Block internal addresses prevents SSRF attacks by disallowing localhost
@@ -180,7 +185,7 @@ public class ICSImportService {
             host.startsWith("192.168.") ||
             host.startsWith("10.") ||
             host.startsWith("172.16.")) {
-            throw new IllegalArgumentException("Invalid URL");
+            throw new IllegalArgumentException("This calendar URL isn't supported.");
         }
     }
 
