@@ -87,6 +87,9 @@ public class ICSParser {
 
         String rawTitle = summaryProp.get().getValue().trim();
 
+        // Remove any trailing bracketed course/section tags from the title
+        rawTitle = rawTitle.replaceAll("\\s*\\[[A-Z0-9.\\-]+\\]\\s*$", "").trim();
+
         // Truncate title to match @Size(max = 70) on ICSPreviewItemDTO
         String title = rawTitle.length() > 70 ? rawTitle.substring(0, 67) + "..." : rawTitle;
 
