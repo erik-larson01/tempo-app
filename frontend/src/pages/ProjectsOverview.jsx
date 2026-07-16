@@ -1,9 +1,10 @@
 import { useContext, useState, useEffect } from "react"
-import { Plus } from "lucide-react"
+import { Plus, Upload } from "lucide-react"
 import ProjectModal from "../components/projects/ProjectModal"
 import ProjectsContext from "../contexts/ProjectsContext"
 import DeleteProjectModal from "../components/projects/DeleteProjectModal"
 import ProjectCard from "../components/projects/ProjectCard"
+import ICSImportModal from "../ics/ICSImportModal"
 import { PROJECT_SORT_OPTIONS, USER_PREFERENCE_KEYS, readStoredPreference, writeStoredPreference } from '../utils/userPreferences'
 
 function ProjectsOverview() {
@@ -14,6 +15,7 @@ function ProjectsOverview() {
 
   // States to track status of modal
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
@@ -48,6 +50,10 @@ function ProjectsOverview() {
   // Add created project to list of projects in state
   const handleCreatedProject = (newProject) => {
     setProjects((prevProjects) => [...prevProjects, newProject])
+  }
+
+  const handleImportedProjects = (importedProjects) => {
+    setProjects((prevProjects) => [...prevProjects, ...importedProjects])
   }
 
   // Updates the metadata of a project
@@ -166,14 +172,24 @@ function ProjectsOverview() {
             </p>
           </div>
 
-          {/** New Project Button */}
-          <button
-            onClick={() => setIsCreateModalOpen(true)}
-            className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-3 py-1.5 rounded-md transition-colors duration-200"
-          >
-            <Plus size={16} />
-            New Project
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsImportModalOpen(true)}
+              className="flex items-center gap-1 rounded-md border border-indigo-200 bg-white px-3 py-1.5 text-sm font-medium text-indigo-700 transition-colors duration-200 hover:bg-indigo-50"
+            >
+              <Upload size={16} />
+              Import from Calendar
+            </button>
+
+            {/** New Project Button */}
+            <button
+              onClick={() => setIsCreateModalOpen(true)}
+              className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-3 py-1.5 rounded-md transition-colors duration-200"
+            >
+              <Plus size={16} />
+              New Project
+            </button>
+          </div>
         </div>
 
         {/** Search/Filter/Sort Controls */}
@@ -308,6 +324,13 @@ function ProjectsOverview() {
           }}
           onProjectSaved={handleUpdatedProject}
           project={selectedProject}
+        />
+      )}
+
+      {isImportModalOpen && (
+        <ICSImportModal
+          onClose={() => setIsImportModalOpen(false)}
+          onProjectsImported={handleImportedProjects}
         />
       )}
 
