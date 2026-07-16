@@ -85,13 +85,11 @@ public class ICSParser {
             return null; 
         }
 
-        String rawTitle = summaryProp.get().getValue().trim();
-
-        // Remove any trailing bracketed course/section tags from the title
-        rawTitle = rawTitle.replaceAll("\\s*\\[[A-Z0-9.\\-]+\\]\\s*$", "").trim();
+        String originalTitle = summaryProp.get().getValue().trim();
+        String cleanedTitle = originalTitle.replaceAll("\\s*\\[[^\\]]*\\]\\s*$","").trim();
 
         // Truncate title to match @Size(max = 70) on ICSPreviewItemDTO
-        String title = rawTitle.length() > 70 ? rawTitle.substring(0, 67) + "..." : rawTitle;
+        String title = cleanedTitle.length() > 70 ? cleanedTitle.substring(0, 67) + "..." : cleanedTitle;
 
         // Due date parsing (DTSTART property)
         // The value can be a DATE, a floating DATE-TIME, a UTC DATE-TIME, or a DATE-TIME with an explicit TZID
@@ -111,11 +109,11 @@ public class ICSParser {
         }
 
         // Parse category (either from CATEGORIES property or from bracketed tag in title)
-        String category = extractCategory(event, rawTitle);
+        String category = extractCategory(event, originalTitle);
 
-        // Truncate to match @Size(max = 20) on ICSPreviewItemDTO
-        if (category != null && category.length() > 20) {
-            category = category.substring(0, 20);
+        // Truncate to match @Size(max = 30) on ICSPreviewItemDTO
+        if (category != null && category.length() > 30) {
+            category = category.substring(0, 30);
         }
 
         // Parse description (DESCRIPTION property)
@@ -169,7 +167,7 @@ public class ICSParser {
      * Tries to extract a course code or category name from the event by using the CATEGORIES property or by parsing the 
      * bracketed course/section tag from the SUMMARY.
      */
-    private String extractCategory(VEvent event, String rawTitle) {
+    private String extractCategory(VEvent event, String originalTitle) {
 
         // Check for CATEGORIES property first
         Optional<Categories> categoriesProp = event.getProperty(Property.CATEGORIES);
@@ -183,12 +181,12 @@ public class ICSParser {
         }
 
         // If no CATEGORIES property, try to parse a bracketed course/section tag from the title)
-        int openBracket = rawTitle.indexOf('[');
+        int openBracket = originalTitle.indexOf('[');
         if (openBracket != -1) {
-            int closeBracket = rawTitle.indexOf(']', openBracket + 1);
+            int closeBracket = originalTitle.indexOf(']', openBracket + 1);
 
             if (closeBracket != -1) {
-                String potential = rawTitle.substring(openBracket + 1, closeBracket).trim();
+                String potential = originalTitle.substring(openBracket + 1, closeBracket).trim();
 
                 // Check for a course code pattern/digit 
                 boolean hasDigit = potential.chars().anyMatch(Character::isDigit);
