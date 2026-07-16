@@ -126,7 +126,7 @@ public class ICSImportService {
 
             if (response.statusCode() != 200) {
                 throw new IllegalArgumentException(
-                    "We couldn't access your calendar. Make sure your calendar URL is correct and still active. Check that your calendar URL is correct and still valid."
+                    "Your calendar URL could not be accessed. Make sure your calendar URL is correct and still active. Check that your calendar URL is correct and still valid."
                 );
             }
 
