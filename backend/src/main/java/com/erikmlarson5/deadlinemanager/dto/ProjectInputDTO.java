@@ -16,7 +16,7 @@ public class ProjectInputDTO {
     @Size(max = 2000, message = "Description must be 2000 characters or fewer")
     private String description;
 
-    @Size(max = 20, message = "Category must be 20 characters or fewer")
+    @Size(max = 30, message = "Category must be 30 characters or fewer")
     private String category;
 
     @NotNull(message = "Due date is required")
