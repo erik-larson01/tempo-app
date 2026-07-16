@@ -1,5 +1,5 @@
 import { useAuth0 } from '@auth0/auth0-react'
-import { ArrowRight, BarChart3, CalendarClock, CheckCircle2, Layers, Target } from 'lucide-react'
+import { ArrowRight, BarChart3, CalendarSync, CheckCircle2, Layers, Target } from 'lucide-react'
 
 function LandingPage({ error }) {
   const { loginWithRedirect } = useAuth0()
@@ -62,10 +62,10 @@ function LandingPage({ error }) {
           <section className="animate-fade-up space-y-8">
             <div className="space-y-4">
               <h1 className="max-w-xl text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
-                Project management with built-in prioritization.
+                Project management that helps you decide what matters next.
               </h1>
               <p className="max-w-xl text-base leading-relaxed text-gray-600 sm:text-lg">
-                Organize projects, break work into manageable tasks, monitor deadlines and progress, and let Tempo automatically rank what deserves your attention next using a dynamic priority scoring system.
+                Tempo helps students organize projects, track progress, and prioritize tasks based on deadlines, workload, and completion status.
               </p>
             </div>
 
@@ -96,18 +96,18 @@ function LandingPage({ error }) {
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="rounded-xl border border-indigo-100 bg-white p-4 shadow-sm">
                 <Layers size={16} className="text-indigo-500" />
-                <p className="mt-2 text-sm font-medium text-gray-900">Task Breakdown</p>
-                <p className="mt-1.5 text-xs text-gray-600">Turn large projects into small, actionable steps.</p>
+                <p className="mt-2 text-sm font-medium text-gray-900">Project Planning</p>
+                <p className="mt-1.5 text-xs text-gray-600">Turn large projects into manageable tasks and track progress.</p>
               </div>
               <div className="rounded-xl border border-indigo-100 bg-white p-4 shadow-sm">
                 <Target size={16} className="text-indigo-500" />
-                <p className="mt-2 text-sm font-medium text-gray-900">Focus List</p>
-                <p className="mt-1.5 text-xs text-gray-600">Automatically surfaces your 5 most important tasks.</p>
+                <p className="mt-2 text-sm font-medium text-gray-900">Smart Prioritization</p>
+                <p className="mt-1.5 text-xs text-gray-600">Automatically ranks tasks based on deadlines, workload, and urgency.</p>
               </div>
               <div className="rounded-xl border border-indigo-100 bg-white p-4 shadow-sm">
-                <CalendarClock size={16} className="text-indigo-500" />
-                <p className="mt-2 text-sm font-medium text-gray-900">Calendar View</p>
-                <p className="mt-1.5 text-xs text-gray-600">See deadlines and tasks organized across your timeline.</p>
+                <CalendarSync size={16} className="text-indigo-500" />
+                <p className="mt-2 text-sm font-medium text-gray-900">Canvas Import</p>
+                <p className="mt-1.5 text-xs text-gray-600">Import your course assignments from Canvas directly into Tempo.</p>
               </div>
             </div>
           </section>
@@ -161,18 +161,6 @@ function LandingPage({ error }) {
             </p>
           </section>
         </main>
-        <footer className="mt-16 border-t border-gray-200 pt-6 text-center text-xs text-gray-500">
-          Built by{' '}
-          <a href="https://www.linkedin.com/in/erikmlarson5/" target="_blank" rel="noopener noreferrer" className="font-medium text-indigo-600 hover:underline">
-            Erik Larson
-          </a>
-
-          <span className="mx-3 text-gray-300">|</span>
-
-          <a href="https://github.com/erik-larson01" target="_blank" rel="noopener noreferrer" className="font-medium text-indigo-600 hover:underline">
-            GitHub
-          </a>
-        </footer>
       </div>
     </div>
   )
