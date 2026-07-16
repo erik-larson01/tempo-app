@@ -269,6 +269,19 @@ function Profile() {
           </label>
         </div>
       </section>
+
+      <footer className="mt-16 border-t border-gray-200 pt-6 text-center text-xs text-gray-500">
+        Built by{' '}
+        <a href="https://www.linkedin.com/in/erikmlarson5/" target="_blank" rel="noopener noreferrer" className="font-medium text-indigo-600 hover:underline">
+          Erik Larson
+        </a>
+
+        <span className="mx-3 text-gray-300">|</span>
+
+        <a href="https://github.com/erik-larson01" target="_blank" rel="noopener noreferrer" className="font-medium text-indigo-600 hover:underline">
+          GitHub
+        </a>
+      </footer>
     </div>
   )
 }
